@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese TTS Demo - 日本語技術文書対話学習</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>日本語技術文書対話学習</h1>
+            <p>技術文書を自然な日本語対話に変換して学習します</p>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <h2>文書アップロード</h2>
+                <div class="upload-area" id="uploadArea">
+                    <p>技術文書をここにドラッグ&ドロップするか、クリックして選択してください</p>
+                    <input type="file" id="fileInput" accept=".txt,.md,.pdf" style="display: none;">
+                    <button id="uploadBtn">ファイルを選択</button>
+                </div>
+                <div class="text-input">
+                    <textarea id="textInput" placeholder="または、ここに直接テキストを貼り付けてください..."></textarea>
+                    <button id="processBtn">対話を生成</button>
+                </div>
+            </section>
+
+            <section class="player-section" id="playerSection" style="display: none;">
+                <h2>対話プレイヤー</h2>
+                <div class="audio-player">
+                    <audio id="audioPlayer" controls>
+                        <source src="" type="audio/mpeg">
+                        お使いのブラウザはオーディオ要素をサポートしていません。
+                    </audio>
+                </div>
+                
+                <div class="player-controls">
+                    <button id="playBtn">▶ 再生</button>
+                    <button id="pauseBtn">⏸ 一時停止</button>
+                    <button id="stopBtn">⏹ 停止</button>
+                    <button id="showScriptBtn">📝 スクリプト表示</button>
+                </div>
+
+                <div class="progress-info">
+                    <span id="currentTime">00:00</span>
+                    <progress id="progressBar" value="0" max="100"></progress>
+                    <span id="totalTime">00:00</span>
+                </div>
+            </section>
+
+            <section class="script-section" id="scriptSection" style="display: none;">
+                <h2>対話スクリプト</h2>
+                <div class="script-content" id="scriptContent">
+                    <div class="dialogue-entry">
+                        <div class="speaker senior">先輩：</div>
+                        <div class="text">こちらが対話スクリプトです...</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>技術文書の理解を深めるための音声学習ツール</p>
+        </footer>
+    </div>
+
+    <script src="src/app.js"></script>
+</body>
+</html>

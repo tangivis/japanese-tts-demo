@@ -1,0 +1,17 @@
+{
+  "name": "japanese-tts-demo",
+  "version": "1.0.0",
+  "description": "Japanese Technical Document to Dialogue TTS Demo",
+  "main": "index.js",
+  "scripts": {
+    "dev": "http-server -p 3000 -c-1",
+    "build": "echo 'Building static files...'",
+    "deploy": "echo 'Deploy to Cloudflare Pages...'"
+  },
+  "keywords": ["japanese", "tts", "dialogue", "technical-document"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

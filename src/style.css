@@ -1,0 +1,253 @@
+/* 日本語技術文書対話学習 - CSS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', Meiryo, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+}
+
+header h1 {
+    font-size: 28px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #666;
+    font-size: 16px;
+}
+
+section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+section h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 20px;
+}
+
+/* アップロードエリア */
+.upload-area {
+    border: 2px dashed #007bff;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+    background-color: white;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-area:hover {
+    background-color: #f0f8ff;
+}
+
+.upload-area.dragover {
+    background-color: #e3f2fd;
+    border-color: #0056b3;
+}
+
+/* テキスト入力エリア */
+.text-input {
+    margin-top: 20px;
+}
+
+.text-input textarea {
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* ボタンスタイル */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+#processBtn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    font-size: 16px;
+}
+
+/* オーディオプレイヤー */
+.audio-player {
+    margin-bottom: 20px;
+}
+
+.audio-player audio {
+    width: 100%;
+    height: 40px;
+}
+
+.player-controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.player-controls button {
+    min-width: 100px;
+}
+
+/* プログレスバー */
+.progress-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.progress-info progress {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+}
+
+.progress-info span {
+    font-family: monospace;
+    font-size: 14px;
+    color: #666;
+}
+
+/* スクリプト表示 */
+.script-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.dialogue-entry {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-left: 3px solid #007bff;
+    background-color: #f8f9fa;
+}
+
+.speaker {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.speaker.senior {
+    color: #007bff;
+}
+
+.speaker.junior {
+    color: #28a745;
+}
+
+.text {
+    line-height: 1.8;
+    padding-left: 10px;
+}
+
+/* ローディング状態 */
+.loading {
+    text-align: center;
+    padding: 20px;
+}
+
+.loading::after {
+    content: '処理中...';
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '処理中'; }
+    40% { content: '処理中.'; }
+    60% { content: '処理中..'; }
+    80%, 100% { content: '処理中...'; }
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    color: #666;
+    font-size: 14px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 24px;
+    }
+    
+    .player-controls {
+        flex-direction: column;
+    }
+    
+    .player-controls button {
+        width: 100%;
+    }
+    
+    .progress-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .progress-info progress {
+        order: 2;
+        width: 100%;
+    }
+}
