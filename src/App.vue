@@ -103,11 +103,17 @@ const handleReplay = async (item) => {
   try {
     // 重新生成音频
     const audioData = await generateAudio(item.fullText)
+    
+    // 先清除当前音频，确保组件重新渲染
+    currentAudio.value = null
+    hasAudio.value = false
+    
+    // 等待清除完成
+    await nextTick()
+    
+    // 设置新音频数据
     currentAudio.value = audioData
     hasAudio.value = true
-    
-    // 等待组件更新后自动播放
-    await nextTick()
     
     ElMessage.success('音声再生開始')
   } catch (error) {

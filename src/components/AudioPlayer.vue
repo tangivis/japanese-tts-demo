@@ -41,7 +41,7 @@
           :max="100"
           class="progress-slider"
           @change="handleSeek"
-          :disabled="!audioData || audioData?.isWebSpeech"
+          :disabled="!audioData"
         />
         <span class="time-display">{{ formatTime(duration) }}</span>
       </div>
@@ -194,9 +194,15 @@ const stop = () => {
 }
 
 const handleSeek = (value) => {
-  // Web Speech API不支持拖动
+  // Web Speech API支持模拟拖动
   if (props.audioData?.isWebSpeech) {
-    return
+    // 对于Web Speech API，只能重新开始播放
+    if (value > 0 && value < 100) {
+      // 不支持跳转到中间，重置到开始
+      progress.value = 0
+      currentTime.value = 0
+      return
+    }
   }
   
   if (audioPlayer.value && duration.value > 0) {
@@ -239,7 +245,7 @@ const stopTimeTracking = () => {
 }
 
 const formatTime = (seconds) => {
-  if (isNaN(seconds)) return '00:00'
+  if (isNaN(seconds) || seconds < 0) return '00:00'
   const mins = Math.floor(seconds / 60)
   const secs = Math.floor(seconds % 60)
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
