@@ -51,7 +51,7 @@
         <el-button
           type="success"
           @click="$emit('download')"
-          :disabled="!audioData"
+          :disabled="!audioData || audioData?.isWebSpeech"
         >
           <el-icon><Download /></el-icon>
           ダウンロード
@@ -108,10 +108,63 @@ const createAudioPlayer = () => {
       progress.value = 0
       stopTimeTracking()
     })
+  } else if (props.audioData?.isWebSpeech) {
+    // 为Web Speech API设置估算时长
+    duration.value = props.audioData.duration || 0
+    currentTime.value = 0
+    progress.value = 0
   }
 }
 
 const togglePlay = async () => {
+  // 处理Web Speech API
+  if (props.audioData?.isWebSpeech) {
+    if (isPlaying.value) {
+      speechSynthesis.cancel()
+      isPlaying.value = false
+      stopTimeTracking()
+    } else {
+      if (props.audioData.utterance) {
+        // 重新创建utterance以避免复用问题
+        const utterance = new SpeechSynthesisUtterance(props.audioData.text)
+        utterance.lang = 'ja-JP'
+        utterance.rate = 0.8
+        utterance.pitch = 1.0
+        utterance.volume = 1.0
+        
+        // 设置语音
+        const voices = speechSynthesis.getVoices()
+        const japaneseVoice = voices.find(voice => 
+          voice.lang.includes('ja') || voice.lang.includes('JP')
+        )
+        if (japaneseVoice) {
+          utterance.voice = japaneseVoice
+        }
+        
+        utterance.onstart = () => {
+          isPlaying.value = true
+          startTimeTracking()
+        }
+        
+        utterance.onend = () => {
+          isPlaying.value = false
+          currentTime.value = 0
+          progress.value = 0
+          stopTimeTracking()
+        }
+        
+        utterance.onerror = () => {
+          isPlaying.value = false
+          stopTimeTracking()
+        }
+        
+        speechSynthesis.speak(utterance)
+      }
+    }
+    return
+  }
+
+  // 处理普通音频文件
   if (!audioPlayer.value) return
 
   if (isPlaying.value) {
@@ -130,6 +183,17 @@ const togglePlay = async () => {
 }
 
 const stop = () => {
+  // 处理Web Speech API
+  if (props.audioData?.isWebSpeech) {
+    speechSynthesis.cancel()
+    currentTime.value = 0
+    progress.value = 0
+    isPlaying.value = false
+    stopTimeTracking()
+    return
+  }
+
+  // 处理普通音频文件
   if (audioPlayer.value) {
     audioPlayer.value.pause()
     audioPlayer.value.currentTime = 0
@@ -151,7 +215,20 @@ const handleSeek = (value) => {
 const startTimeTracking = () => {
   stopTimeTracking()
   timeUpdateInterval = setInterval(() => {
-    if (audioPlayer.value && isPlaying.value) {
+    if (props.audioData?.isWebSpeech && isPlaying.value) {
+      // 为Web Speech API模拟进度
+      currentTime.value += 0.1
+      if (duration.value > 0) {
+        progress.value = Math.min(100, (currentTime.value / duration.value) * 100)
+      }
+      // 检查是否应该结束
+      if (currentTime.value >= duration.value) {
+        isPlaying.value = false
+        currentTime.value = duration.value
+        progress.value = 100
+        stopTimeTracking()
+      }
+    } else if (audioPlayer.value && isPlaying.value) {
       currentTime.value = audioPlayer.value.currentTime
       if (duration.value > 0) {
         progress.value = (currentTime.value / duration.value) * 100

@@ -49,7 +49,7 @@ export function useTTS() {
       utterance.onend = () => {
         if (!resolved) {
           resolved = true
-          // 创建虚拟音频数据
+          // 创建虚拟音频数据，不自动播放
           resolve({
             blob: null,
             isWebSpeech: true,
@@ -67,30 +67,20 @@ export function useTTS() {
         }
       }
 
-      // 确保语音列表已加载
-      if (speechSynthesis.getVoices().length === 0) {
-        speechSynthesis.addEventListener('voiceschanged', () => {
-          const voices = speechSynthesis.getVoices()
-          const japaneseVoice = voices.find(voice => 
-            voice.lang.includes('ja') || voice.lang.includes('JP')
-          )
-          if (japaneseVoice) {
-            utterance.voice = japaneseVoice
-          }
-          speechSynthesis.speak(utterance)
-        }, { once: true })
-      } else {
-        speechSynthesis.speak(utterance)
-      }
-
-      // 超时保护
+      // 不在这里直接播放，只返回数据给播放器处理
+      // 立即触发onend来返回数据
       setTimeout(() => {
         if (!resolved) {
           resolved = true
-          speechSynthesis.cancel()
-          reject(new Error('音声生成がタイムアウトしました'))
+          resolve({
+            blob: null,
+            isWebSpeech: true,
+            text: text,
+            duration: estimateDuration(text),
+            utterance: utterance
+          })
         }
-      }, 30000)
+      }, 100)
     })
   }
 
