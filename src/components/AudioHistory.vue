@@ -1,112 +1,160 @@
 <template>
-  <el-card class="history-card" shadow="hover" v-if="history.length > 0">
-    <template #header>
-      <div class="card-header">
-        <el-icon class="header-icon"><Clock /></el-icon>
-        <span>履歴</span>
-        <el-badge :value="history.length" class="history-badge" />
+  <div class="history-container" v-if="history.length > 0">
+    <div class="history-header">
+      <div class="header-content">
+        <div class="header-icon">📚</div>
+        <span class="header-title">再生履歴</span>
+        <div class="history-count">{{ history.length }}</div>
       </div>
-    </template>
+    </div>
 
-    <div class="history-content">
+    <div class="history-list">
       <div 
         v-for="item in history" 
         :key="item.id"
         class="history-item"
+        :class="{ 'current': item.id === currentItemId }"
+        @click="handleItemClick(item)"
       >
-        <div class="item-content">
+        <div class="item-main">
           <div class="item-text">{{ item.text }}</div>
-          <div class="item-time">{{ item.timestamp }}</div>
+          <div class="item-meta">
+            <span class="item-time">{{ formatTime(item.timestamp) }}</span>
+            <span class="item-action-hint">タップして再生</span>
+          </div>
         </div>
         
-        <div class="item-actions">
-          <el-button
-            type="primary"
-            size="small"
-            circle
-            @click="$emit('replay', item)"
-            title="再生"
-          >
-            <el-icon><VideoPlay /></el-icon>
-          </el-button>
-          
-          <el-button
-            type="danger"
-            size="small"
-            circle
-            @click="$emit('delete', item.id)"
-            title="削除"
-          >
-            <el-icon><Delete /></el-icon>
-          </el-button>
+        <div class="item-status">
+          <div v-if="item.id === currentItemId" class="status-indicator playing">
+            <div class="pulse-ring"></div>
+            <div class="pulse-dot"></div>
+          </div>
+          <div v-else class="status-indicator idle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5v14l11-7z" fill="currentColor"/>
+            </svg>
+          </div>
         </div>
+
+        <button 
+          class="delete-btn"
+          @click.stop="handleDelete(item.id)"
+          title="削除"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script setup>
-import { defineEmits } from 'vue'
-import { Clock, VideoPlay, Delete } from '@element-plus/icons-vue'
-
-defineEmits(['replay', 'delete'])
+const emit = defineEmits(['selectItem', 'delete'])
 
 defineProps({
   history: {
     type: Array,
     default: () => []
+  },
+  currentItemId: {
+    type: String,
+    default: null
   }
 })
+
+const handleItemClick = (item) => {
+  emit('selectItem', item)
+}
+
+const handleDelete = (itemId) => {
+  emit('delete', itemId)
+}
+
+const formatTime = (timestamp) => {
+  const now = new Date()
+  const time = new Date(timestamp)
+  const diffInHours = (now - time) / (1000 * 60 * 60)
+  
+  if (diffInHours < 1) {
+    const minutes = Math.floor((now - time) / (1000 * 60))
+    return minutes < 1 ? 'たった今' : `${minutes}分前`
+  } else if (diffInHours < 24) {
+    return `${Math.floor(diffInHours)}時間前`
+  } else {
+    return time.toLocaleDateString('ja-JP', { 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+}
 </script>
 
 <style scoped>
-.history-card {
+.history-container {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.history-card:hover {
-  background: rgba(255, 255, 255, 0.9);
+.history-container:hover {
+  background: rgba(255, 255, 255, 0.95);
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
-.card-header {
+.history-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.header-content {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 1rem;
+  gap: 12px;
 }
 
 .header-icon {
-  color: #f59e0b;
-  font-size: 1.2rem;
-}
-
-.history-badge {
-  margin-left: auto;
-}
-
-.history-badge :deep(.el-badge__content) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: white;
-  font-weight: 600;
-}
-
-.history-content {
+  font-size: 18px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 280px;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 8px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+}
+
+.history-count {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.history-list {
+  max-height: 320px;
   overflow-y: auto;
-  padding: 4px;
+  padding: 8px;
 }
 
 .history-item {
@@ -114,126 +162,237 @@ defineProps({
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
+  margin-bottom: 4px;
+  border-radius: 16px;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid transparent;
 }
 
 .history-item:hover {
   background: rgba(255, 255, 255, 0.8);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
-.item-content {
+.history-item.current {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+.item-main {
   flex: 1;
   min-width: 0;
 }
 
 .item-text {
   font-size: 14px;
-  color: #1f2937;
-  margin-bottom: 4px;
-  word-break: break-word;
-  line-height: 1.4;
   font-weight: 500;
+  color: #1e293b;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
 }
 
 .item-time {
-  font-size: 12px;
-  color: #6b7280;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', 'Monaco', 'Consolas', monospace;
+  color: #64748b;
+  font-weight: 400;
 }
 
-.item-actions {
-  display: flex;
-  gap: 6px;
+.item-action-hint {
+  color: #667eea;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.history-item:hover .item-action-hint {
+  opacity: 1;
+}
+
+.history-item.current .item-action-hint {
+  opacity: 0;
+}
+
+.item-status {
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.item-actions .el-button {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
+.status-indicator.idle {
+  color: #94a3b8;
   transition: all 0.3s ease;
 }
 
-.item-actions .el-button[type="primary"] {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+.history-item:hover .status-indicator.idle {
+  color: #667eea;
+  transform: scale(1.1);
 }
 
-.item-actions .el-button[type="primary"]:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+.status-indicator.playing {
+  position: relative;
+  width: 20px;
+  height: 20px;
 }
 
-.item-actions .el-button[type="danger"] {
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #667eea;
+  border-radius: 50%;
+  animation: pulse-ring 1.5s infinite;
+}
+
+.pulse-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #667eea;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
   background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.item-actions .el-button[type="danger"]:hover {
+.history-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
   background: rgba(239, 68, 68, 0.2);
-  color: #b91c1c;
-  transform: scale(1.05);
+  color: #dc2626;
+  transform: scale(1.1);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
 }
 
 /* 自定义滚动条 */
-.history-content::-webkit-scrollbar {
+.history-list::-webkit-scrollbar {
   width: 6px;
 }
 
-.history-content::-webkit-scrollbar-track {
+.history-list::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 3px;
 }
 
-.history-content::-webkit-scrollbar-thumb {
+.history-list::-webkit-scrollbar-thumb {
   background: rgba(102, 126, 234, 0.3);
   border-radius: 3px;
   transition: background 0.3s ease;
 }
 
-.history-content::-webkit-scrollbar-thumb:hover {
+.history-list::-webkit-scrollbar-thumb:hover {
   background: rgba(102, 126, 234, 0.5);
 }
 
 @media (max-width: 768px) {
+  .history-header {
+    padding: 16px 20px 12px;
+  }
+  
+  .header-title {
+    font-size: 15px;
+  }
+  
   .history-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: 12px;
-  }
-  
-  .item-actions {
-    justify-content: center;
-    gap: 8px;
-  }
-  
-  .item-actions .el-button {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-@media (max-width: 480px) {
-  .history-content {
-    max-height: 240px;
+    padding: 14px;
   }
   
   .item-text {
     font-size: 13px;
   }
   
-  .item-time {
+  .item-meta {
     font-size: 11px;
+  }
+  
+  .history-list {
+    max-height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-container {
+    border-radius: 16px;
+  }
+  
+  .history-header {
+    padding: 14px 16px 10px;
+  }
+  
+  .header-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  
+  .header-title {
+    font-size: 14px;
+  }
+  
+  .history-item {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  
+  .item-text {
+    font-size: 12px;
+    -webkit-line-clamp: 1;
+  }
+  
+  .item-action-hint {
+    display: none;
   }
 }
 </style>

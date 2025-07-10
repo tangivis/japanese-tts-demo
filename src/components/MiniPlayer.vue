@@ -1,33 +1,55 @@
 <template>
-  <div class="mini-player">
+  <div class="mini-player" :class="{ 'playing': isPlaying, 'no-audio': !hasAudio }">
     <div class="player-content">
       <!-- 播放控制 -->
       <div class="player-controls">
-        <el-button
-          :type="isPlaying ? 'warning' : 'primary'"
-          size="large"
-          circle
+        <button
+          :disabled="!hasAudio"
           @click="$emit('togglePlay')"
           class="play-btn"
+          :class="{ 'playing': isPlaying }"
+          :title="getPlayButtonTitle()"
         >
-          <el-icon size="20">
-            <VideoPause v-if="isPlaying" />
-            <VideoPlay v-else />
-          </el-icon>
-        </el-button>
+          <div class="play-icon">
+            <div v-if="isPlaying" class="pause-bars">
+              <span></span>
+              <span></span>
+            </div>
+            <div v-else class="play-triangle"></div>
+          </div>
+          <div v-if="isPlaying" class="ripple-effect"></div>
+        </button>
 
+        <!-- 停止按钮（仅在播放时显示） -->
+        <button
+          v-if="isPlaying"
+          @click="$emit('stopPlay')"
+          class="stop-btn"
+          title="停止播放"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="6" width="12" height="12" fill="currentColor" rx="2"/>
+          </svg>
+        </button>
       </div>
 
-      <!-- 时间和进度 -->
-      <div class="progress-info">
-        <div class="time-display">
-          {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+      <!-- 状态信息 -->
+      <div class="status-info">
+        <div class="status-text">
+          <span v-if="!hasAudio" class="hint-text">音声を生成してください</span>
+          <span v-else-if="isPlaying && canPause" class="playing-text">再生中（クリックで一時停止）</span>
+          <span v-else-if="isPlaying && !canPause" class="playing-text">再生中（停止ボタンで停止）</span>
+          <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中（クリックで再開）</span>
+          <span v-else class="ready-text">再生準備完了</span>
         </div>
-        <div class="progress-bar">
-          <div 
-            class="progress-fill" 
-            :style="{ width: progress + '%' }"
-          ></div>
+        
+        <!-- 简化的进度指示器 -->
+        <div v-if="hasAudio" class="activity-indicator">
+          <div class="dots" :class="{ 'animating': isPlaying }">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
       </div>
     </div>
@@ -35,34 +57,34 @@
 </template>
 
 <script setup>
-import { VideoPlay, VideoPause } from '@element-plus/icons-vue'
+defineEmits(['togglePlay', 'stopPlay'])
 
-defineEmits(['togglePlay'])
-
-defineProps({
+const props = defineProps({
   isPlaying: {
     type: Boolean,
     default: false
   },
-  currentTime: {
-    type: Number,
-    default: 0
+  hasAudio: {
+    type: Boolean,
+    default: false
   },
-  duration: {
-    type: Number,
-    default: 0
+  canPause: {
+    type: Boolean,
+    default: false
   },
-  progress: {
-    type: Number,
-    default: 0
+  isPaused: {
+    type: Boolean,
+    default: false
   }
 })
 
-const formatTime = (seconds) => {
-  if (isNaN(seconds) || seconds < 0) return '00:00'
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+const getPlayButtonTitle = () => {
+  if (!props.hasAudio) return '音声を生成してください'
+  if (props.isPlaying) {
+    return props.canPause ? 'クリックで一時停止' : '停止ボタンで停止'
+  }
+  if (props.isPaused) return 'クリックで再開'
+  return 'クリックで再生'
 }
 </script>
 
@@ -70,23 +92,30 @@ const formatTime = (seconds) => {
 .mini-player {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 20px;
+  padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
 }
 
-.mini-player:hover {
-  background: rgba(255, 255, 255, 0.9);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+.mini-player.playing {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
+}
+
+.mini-player.no-audio {
+  background: rgba(248, 250, 252, 0.8);
+  border-color: rgba(203, 213, 224, 0.5);
 }
 
 .player-content {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .player-controls {
@@ -97,51 +126,200 @@ const formatTime = (seconds) => {
 }
 
 .play-btn {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 64px;
+  height: 64px;
   border: none;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.stop-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.play-btn:disabled {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  cursor: not-allowed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.play-btn:not(:disabled):hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
+}
+
+.play-btn:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.stop-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #b91c1c;
+  transform: scale(1.05);
+}
+
+.stop-btn:active {
+  transform: scale(0.95);
+}
+
+.play-icon {
+  position: relative;
+  z-index: 2;
+}
+
+.play-triangle {
+  width: 0;
+  height: 0;
+  border-left: 12px solid white;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  margin-left: 3px;
+}
+
+.pause-bars {
+  display: flex;
+  gap: 4px;
+}
+
+.pause-bars span {
+  width: 4px;
+  height: 16px;
+  background: white;
+  border-radius: 2px;
+}
+
+.ripple-effect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+  0% {
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+  }
+  100% {
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
+}
+
+.status-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-text {
+  font-size: 16px;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
-.play-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+.hint-text {
+  color: #94a3b8;
+  font-weight: 400;
 }
 
-
-.progress-info {
-  flex: 1;
-  min-width: 0;
+.playing-text {
+  color: #667eea;
+  animation: pulse 2s infinite;
 }
 
-.time-display {
-  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 8px;
-  text-align: center;
+.ready-text {
+  color: #1e293b;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 4px;
-  background: rgba(107, 114, 128, 0.2);
-  border-radius: 2px;
-  overflow: hidden;
+.paused-text {
+  color: #f59e0b;
+  animation: fade 2s infinite;
 }
 
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px;
-  transition: width 0.3s ease;
+@keyframes fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.activity-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+}
+
+.dots span {
+  width: 6px;
+  height: 6px;
+  background: #cbd5e1;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.dots.animating span {
+  background: #667eea;
+  animation: dotPulse 1.4s infinite;
+}
+
+.dots.animating span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots.animating span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+  0%, 60%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  30% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 768px) {
   .mini-player {
-    padding: 16px;
+    padding: 20px;
+    border-radius: 16px;
   }
   
   .player-content {
@@ -149,17 +327,23 @@ const formatTime = (seconds) => {
   }
   
   .play-btn {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
   }
   
-  .stop-btn {
-    width: 38px;
-    height: 38px;
+  .play-triangle {
+    border-left: 10px solid white;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
   }
   
-  .time-display {
-    font-size: 12px;
+  .pause-bars span {
+    width: 3px;
+    height: 14px;
+  }
+  
+  .status-text {
+    font-size: 14px;
   }
 }
 </style>

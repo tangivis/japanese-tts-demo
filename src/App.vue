@@ -18,18 +18,21 @@
           <TextInput 
             ref="textInputRef"
             @text-submit="handleTextSubmit"
+            @stop-playing="handleStopFromInput"
             :loading="processing"
+            :is-playing="isPlaying"
+            :has-audio="hasAudio"
           />
           
           <!-- 简化的播放控制器 -->
           <div v-if="hasAudio" class="player-container">
             <MiniPlayer 
               :is-playing="isPlaying"
-              :current-time="currentTime"
-              :duration="duration"
-              :progress="progress"
+              :has-audio="hasAudio"
+              :can-pause="canPause"
+              :is-paused="isPaused"
               @toggle-play="handleTogglePlay"
-              @stop="handleStop"
+              @stop-play="handleStopPlay"
             />
           </div>
           
@@ -37,7 +40,8 @@
           <AudioHistory 
             v-if="audioHistory.length > 0"
             :history="audioHistory"
-            @replay="handleReplay"
+            :current-item-id="currentPlayingId"
+            @select-item="handleSelectItem"
             @delete="handleDeleteHistory"
           />
         </div>
@@ -60,11 +64,15 @@ const { generateAudio, isGenerating, createControlledSpeech } = useTTS()
 const processing = ref(false)
 const hasAudio = ref(false)
 const isPlaying = ref(false)
+const isPaused = ref(false)
+const canPause = ref(false) // Web Speech API 通常不支持真正的暂停
 const currentTime = ref(0)
 const duration = ref(0)
 const progress = ref(0)
 const audioHistory = ref([])
 const textInputRef = ref(null)
+const currentPlayingId = ref(null)
+const currentPlayingText = ref('')
 
 let currentUtterance = null
 let timeUpdateInterval = null
@@ -138,30 +146,52 @@ const startPlaying = (text) => {
 
 const handleTogglePlay = () => {
   if (isPlaying.value) {
-    // 停止播放
-    speechSynthesis.cancel()
-    isPlaying.value = false
-    currentTime.value = 0
-    progress.value = 0
-    stopTimeTracking()
-    currentUtterance = null
+    // Web Speech API 不支持真正的暂停，所以停止播放
+    handleStopPlay()
   } else {
-    // 从输入框获取当前文字并播放
+    // 从输入框获取当前文字并播放（从头开始）
     const currentText = textInputRef.value?.getText()?.trim()
     if (currentText) {
+      currentPlayingText.value = currentText
       startPlaying(currentText)
     }
   }
 }
 
-const handleStop = () => {
+const handleStopPlay = () => {
   speechSynthesis.cancel()
   isPlaying.value = false
+  isPaused.value = false
   currentTime.value = 0
   progress.value = 0
   stopTimeTracking()
   currentUtterance = null
-  hasAudio.value = false
+  currentPlayingId.value = null
+}
+
+const handleStopFromInput = () => {
+  handleStopPlay()
+}
+
+const handleSelectItem = async (item) => {
+  // 设置文字到输入框
+  if (textInputRef.value) {
+    textInputRef.value.setText(item.fullText)
+    textInputRef.value.resetChangeState()
+  }
+  
+  // 等待下一个tick确保文字已设置
+  await nextTick()
+  
+  // 设置音频状态并直接播放
+  duration.value = estimateDuration(item.fullText)
+  hasAudio.value = true
+  currentPlayingId.value = item.id
+  currentPlayingText.value = item.fullText
+  
+  startPlaying(item.fullText)
+  
+  ElMessage.success('音声再生開始')
 }
 
 const startTimeTracking = () => {
@@ -203,27 +233,15 @@ const addToHistory = (text) => {
   }
 }
 
-const handleReplay = async (item) => {
-  // 设置文字到输入框
-  if (textInputRef.value) {
-    textInputRef.value.setText(item.fullText)
-  }
-  
-  // 等待下一个tick确保文字已设置
-  await nextTick()
-  
-  // 直接播放
-  duration.value = estimateDuration(item.fullText)
-  hasAudio.value = true
-  startPlaying(item.fullText)
-  
-  ElMessage.success('音声再生開始')
-}
-
 const handleDeleteHistory = (id) => {
   const index = audioHistory.value.findIndex(item => item.id === id)
   if (index !== -1) {
     audioHistory.value.splice(index, 1)
+  }
+  
+  // 如果删除的是当前播放的项目，清除当前播放ID
+  if (currentPlayingId.value === id) {
+    currentPlayingId.value = null
   }
 }
 
