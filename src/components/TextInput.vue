@@ -104,9 +104,19 @@ const clearText = () => {
   text.value = ''
 }
 
-// 暴露clearText方法给父组件
+const setText = (newText) => {
+  text.value = newText
+}
+
+const getText = () => {
+  return text.value
+}
+
+// 暴露方法给父组件
 defineExpose({
-  clearText
+  clearText,
+  setText,
+  getText
 })
 </script>
 

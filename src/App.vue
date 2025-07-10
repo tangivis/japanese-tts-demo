@@ -24,6 +24,7 @@
           <AudioPlayer 
             v-if="hasAudio"
             :audio-data="currentAudio"
+            :text-input-ref="textInputRef"
             @clear="handleClear"
           />
           
@@ -101,19 +102,13 @@ const handleReplay = async (item) => {
   processing.value = true
   
   try {
-    // 重新生成音频
-    const audioData = await generateAudio(item.fullText)
+    // 将历史文字设置到输入框
+    if (textInputRef.value) {
+      textInputRef.value.setText(item.fullText)
+    }
     
-    // 先清除当前音频，确保组件重新渲染
-    currentAudio.value = null
-    hasAudio.value = false
-    
-    // 等待清除完成
-    await nextTick()
-    
-    // 设置新音频数据
-    currentAudio.value = audioData
-    hasAudio.value = true
+    // 直接调用handleTextSubmit来生成并播放
+    await handleTextSubmit(item.fullText)
     
     ElMessage.success('音声再生開始')
   } catch (error) {

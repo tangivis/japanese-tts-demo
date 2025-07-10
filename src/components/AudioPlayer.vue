@@ -41,7 +41,7 @@
           :max="100"
           class="progress-slider"
           @change="handleSeek"
-          :disabled="!audioData"
+          :disabled="!audioData || audioData?.isWebSpeech"
         />
         <span class="time-display">{{ formatTime(duration) }}</span>
       </div>
@@ -70,6 +70,10 @@ const { createControlledSpeech } = useTTS()
 
 const props = defineProps({
   audioData: {
+    type: Object,
+    default: null
+  },
+  textInputRef: {
     type: Object,
     default: null
   }
@@ -111,21 +115,35 @@ const createAudioPlayer = () => {
 }
 
 const togglePlay = async () => {
-  // 处理Web Speech API
+  // 处理Web Speech API - 只支持播放/停止，不支持暂停
   if (props.audioData?.isWebSpeech) {
     if (isPlaying.value) {
-      // 暂停：取消当前语音
+      // 停止：取消当前语音并重置
       speechSynthesis.cancel()
       isPlaying.value = false
+      currentTime.value = 0
+      progress.value = 0
       stopTimeTracking()
       currentUtterance.value = null
     } else {
-      // 播放：使用新的创建函数
+      // 播放：从输入框获取最新文字
       try {
-        const utterance = createControlledSpeech(props.audioData.text)
+        let textToSpeak = props.audioData.text
+        
+        // 如果有输入框引用，从输入框获取最新文字
+        if (props.textInputRef && props.textInputRef.getText) {
+          const currentText = props.textInputRef.getText().trim()
+          if (currentText) {
+            textToSpeak = currentText
+          }
+        }
+        
+        const utterance = createControlledSpeech(textToSpeak)
         
         utterance.onstart = () => {
           isPlaying.value = true
+          currentTime.value = 0
+          progress.value = 0
           startTimeTracking()
         }
         
@@ -139,6 +157,8 @@ const togglePlay = async () => {
         
         utterance.onerror = () => {
           isPlaying.value = false
+          currentTime.value = 0
+          progress.value = 0
           stopTimeTracking()
           currentUtterance.value = null
         }
@@ -194,15 +214,9 @@ const stop = () => {
 }
 
 const handleSeek = (value) => {
-  // Web Speech API支持模拟拖动
+  // Web Speech API不支持拖动，禁用
   if (props.audioData?.isWebSpeech) {
-    // 对于Web Speech API，只能重新开始播放
-    if (value > 0 && value < 100) {
-      // 不支持跳转到中间，重置到开始
-      progress.value = 0
-      currentTime.value = 0
-      return
-    }
+    return
   }
   
   if (audioPlayer.value && duration.value > 0) {
