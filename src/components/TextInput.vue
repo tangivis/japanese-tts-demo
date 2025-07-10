@@ -263,22 +263,21 @@ defineExpose({
 
 <style scoped>
 .text-input-container {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(156, 163, 175, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .text-input-container:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(102, 126, 234, 0.3);
-  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(102, 126, 234, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .input-header {
@@ -440,9 +439,9 @@ defineExpose({
 
 .textarea-wrapper {
   position: relative;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   flex: 1;
   min-height: 0;
 }
@@ -462,15 +461,14 @@ defineExpose({
   height: 100%;
   min-height: 200px;
   padding: 16px;
-  border: 2px solid rgba(102, 126, 234, 0.2);
-  border-radius: 12px;
+  border: 2px solid rgba(156, 163, 175, 0.3);
+  border-radius: 8px;
   font-size: 15px;
   line-height: 1.6;
   color: #1e293b;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
   resize: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
 }
@@ -479,21 +477,27 @@ defineExpose({
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 1);
 }
 
 .smart-textarea:disabled {
-  opacity: 0.5;
-  background: rgba(248, 250, 252, 0.5);
-  color: #94a3b8;
+  opacity: 0.6;
+  background: rgba(249, 250, 251, 1);
+  color: #9ca3af;
+  border-color: rgba(156, 163, 175, 0.2);
 }
 
 .smart-textarea[readonly] {
-  /* 播放时只读模式：保持清晰可选中复制 */
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(102, 126, 234, 0.3);
-  cursor: text;
+  /* 播放时只读模式：禁用选择和滚动 */
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(102, 126, 234, 0.4);
   color: #1e293b;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  overflow: hidden;
 }
 
 .textarea-footer {
