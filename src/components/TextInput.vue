@@ -36,18 +36,19 @@
         <!-- 简洁编辑按钮 -->
         <div v-if="hasAudio && !canEdit && !isPlaying" class="edit-prompt">
           <button class="edit-btn" @click="enableEdit" title="テキストを編集">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </div>
         
-        <div class="textarea-wrapper" :class="{ 'disabled': isPlaying || (!canEdit && hasAudio), 'playing': isPlaying }">
+        <div class="textarea-wrapper" :class="{ 'disabled': (!canEdit && hasAudio), 'playing': isPlaying }">
           <textarea
             ref="textareaRef"
             v-model="text"
-            :disabled="isPlaying || (!canEdit && hasAudio)"
+            :readonly="isPlaying"
+            :disabled="!canEdit && hasAudio && !isPlaying"
             :placeholder="getPlaceholder()"
             class="smart-textarea"
             @input="onTextChange"
@@ -397,11 +398,11 @@ defineExpose({
 }
 
 .edit-btn {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid rgba(102, 126, 234, 0.3);
-  border-radius: 8px;
+  border-radius: 10px;
   color: #667eea;
   cursor: pointer;
   display: flex;
@@ -415,6 +416,11 @@ defineExpose({
   background: rgba(102, 126, 234, 0.1);
   border-color: #667eea;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.edit-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .edit-btn:active {
@@ -446,23 +452,9 @@ defineExpose({
 }
 
 .textarea-wrapper.playing {
-  opacity: 0.6;
-  background: rgba(248, 250, 252, 0.8);
+  /* 播放时样式：保持清晰可读，为未来高亮功能做准备 */
   border-radius: 12px;
   position: relative;
-}
-
-.textarea-wrapper.playing::after {
-  content: '音声再生中...';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #667eea;
-  font-size: 14px;
-  font-weight: 500;
-  pointer-events: none;
-  z-index: 1;
 }
 
 .smart-textarea {
@@ -494,6 +486,14 @@ defineExpose({
   opacity: 0.5;
   background: rgba(248, 250, 252, 0.5);
   color: #94a3b8;
+}
+
+.smart-textarea[readonly] {
+  /* 播放时只读模式：保持清晰可选中复制 */
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(102, 126, 234, 0.3);
+  cursor: text;
+  color: #1e293b;
 }
 
 .textarea-footer {
