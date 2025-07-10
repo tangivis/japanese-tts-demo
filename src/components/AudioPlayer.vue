@@ -63,8 +63,10 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from 'vue'
 import { VideoPlay, VideoPause, RefreshLeft, Delete } from '@element-plus/icons-vue'
+import { useTTS } from '../composables/useTTS'
 
 const emit = defineEmits(['clear'])
+const { createControlledSpeech } = useTTS()
 
 const props = defineProps({
   audioData: {
@@ -78,6 +80,7 @@ const currentTime = ref(0)
 const duration = ref(0)
 const progress = ref(0)
 const audioPlayer = ref(null)
+const currentUtterance = ref(null)
 
 let timeUpdateInterval = null
 
@@ -111,26 +114,15 @@ const togglePlay = async () => {
   // 处理Web Speech API
   if (props.audioData?.isWebSpeech) {
     if (isPlaying.value) {
+      // 暂停：取消当前语音
       speechSynthesis.cancel()
       isPlaying.value = false
       stopTimeTracking()
+      currentUtterance.value = null
     } else {
-      if (props.audioData.utterance) {
-        // 重新创建utterance以避免复用问题
-        const utterance = new SpeechSynthesisUtterance(props.audioData.text)
-        utterance.lang = 'ja-JP'
-        utterance.rate = 0.8
-        utterance.pitch = 1.0
-        utterance.volume = 1.0
-        
-        // 设置语音
-        const voices = speechSynthesis.getVoices()
-        const japaneseVoice = voices.find(voice => 
-          voice.lang.includes('ja') || voice.lang.includes('JP')
-        )
-        if (japaneseVoice) {
-          utterance.voice = japaneseVoice
-        }
+      // 播放：使用新的创建函数
+      try {
+        const utterance = createControlledSpeech(props.audioData.text)
         
         utterance.onstart = () => {
           isPlaying.value = true
@@ -142,14 +134,19 @@ const togglePlay = async () => {
           currentTime.value = 0
           progress.value = 0
           stopTimeTracking()
+          currentUtterance.value = null
         }
         
         utterance.onerror = () => {
           isPlaying.value = false
           stopTimeTracking()
+          currentUtterance.value = null
         }
         
+        currentUtterance.value = utterance
         speechSynthesis.speak(utterance)
+      } catch (error) {
+        console.error('Speech synthesis error:', error)
       }
     }
     return
@@ -181,6 +178,7 @@ const stop = () => {
     progress.value = 0
     isPlaying.value = false
     stopTimeTracking()
+    currentUtterance.value = null
     return
   }
 
@@ -258,10 +256,34 @@ watch(() => props.audioData, (newData) => {
   }
 }, { immediate: true })
 
+onMounted(() => {
+  // 监听全局语音合成状态变化
+  const handleSpeechEnd = () => {
+    if (props.audioData?.isWebSpeech && isPlaying.value) {
+      isPlaying.value = false
+      currentTime.value = 0
+      progress.value = 0
+      stopTimeTracking()
+      currentUtterance.value = null
+    }
+  }
+  
+  // 监听语音合成结束事件
+  speechSynthesis.addEventListener('voiceschanged', handleSpeechEnd)
+  
+  return () => {
+    speechSynthesis.removeEventListener('voiceschanged', handleSpeechEnd)
+  }
+})
+
 onUnmounted(() => {
   stopTimeTracking()
   if (audioPlayer.value) {
     audioPlayer.value.pause()
+  }
+  // 清理语音合成
+  if (currentUtterance.value) {
+    speechSynthesis.cancel()
   }
 })
 </script>

@@ -7,7 +7,7 @@ export function useTTS() {
     isGenerating.value = true
     
     try {
-      // 使用Web Speech API作为备用方案
+      // 使用Web Speech API，但不直接播放
       return await generateWithWebSpeech(text)
     } catch (error) {
       console.error('TTS generation failed:', error)
@@ -24,63 +24,13 @@ export function useTTS() {
         return
       }
 
-      // 创建语音合成
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'ja-JP'
-      utterance.rate = 0.8
-      utterance.pitch = 1.0
-      utterance.volume = 1.0
-
-      // 尝试选择日语语音
-      const voices = speechSynthesis.getVoices()
-      const japaneseVoice = voices.find(voice => 
-        voice.lang.includes('ja') || voice.lang.includes('JP')
-      )
-      if (japaneseVoice) {
-        utterance.voice = japaneseVoice
-      }
-
-      let resolved = false
-
-      utterance.onstart = () => {
-        console.log('Speech synthesis started')
-      }
-
-      utterance.onend = () => {
-        if (!resolved) {
-          resolved = true
-          // 创建虚拟音频数据，不自动播放
-          resolve({
-            blob: null,
-            isWebSpeech: true,
-            text: text,
-            duration: estimateDuration(text),
-            utterance: utterance
-          })
-        }
-      }
-
-      utterance.onerror = (error) => {
-        if (!resolved) {
-          resolved = true
-          reject(new Error('音声合成エラー: ' + error.error))
-        }
-      }
-
-      // 不在这里直接播放，只返回数据给播放器处理
-      // 立即触发onend来返回数据
-      setTimeout(() => {
-        if (!resolved) {
-          resolved = true
-          resolve({
-            blob: null,
-            isWebSpeech: true,
-            text: text,
-            duration: estimateDuration(text),
-            utterance: utterance
-          })
-        }
-      }, 100)
+      // 立即返回数据，不进行播放
+      resolve({
+        blob: null,
+        isWebSpeech: true,
+        text: text,
+        duration: estimateDuration(text)
+      })
     })
   }
 
@@ -90,8 +40,42 @@ export function useTTS() {
     return Math.max(2, text.length / charactersPerSecond)
   }
 
+  // 创建可控制的语音合成函数
+  const createControlledSpeech = (text) => {
+    if (!('speechSynthesis' in window)) {
+      throw new Error('ブラウザが音声合成をサポートしていません')
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'ja-JP'
+    utterance.rate = 0.8
+    utterance.pitch = 1.0
+    utterance.volume = 1.0
+
+    // 设置日语语音
+    const setJapaneseVoice = () => {
+      const voices = speechSynthesis.getVoices()
+      const japaneseVoice = voices.find(voice => 
+        voice.lang.includes('ja') || voice.lang.includes('JP')
+      )
+      if (japaneseVoice) {
+        utterance.voice = japaneseVoice
+      }
+    }
+
+    // 如果语音列表还没加载，等待加载
+    if (speechSynthesis.getVoices().length === 0) {
+      speechSynthesis.addEventListener('voiceschanged', setJapaneseVoice, { once: true })
+    } else {
+      setJapaneseVoice()
+    }
+
+    return utterance
+  }
+
   return {
     generateAudio,
-    isGenerating
+    isGenerating,
+    createControlledSpeech
   }
 }
