@@ -13,11 +13,12 @@
         v-for="item in history" 
         :key="item.id"
         class="history-item"
+        :class="{ 'disabled': isPlaying }"
       >
-        <div class="item-main" @click="handleItemClick(item)">
+        <div class="item-main" @click="!isPlaying && handleItemClick(item)">
           <div class="item-text">{{ item.text }}</div>
           <div class="item-meta">
-            <span class="item-hint">クリックして使用</span>
+            <span class="item-hint">{{ isPlaying ? '再生中は使用できません' : 'クリックして使用' }}</span>
           </div>
         </div>
         
@@ -44,6 +45,10 @@ defineProps({
   history: {
     type: Array,
     default: () => []
+  },
+  isPlaying: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -133,11 +138,20 @@ const handleDelete = (itemId) => {
   border: 1px solid transparent;
 }
 
-.history-item:hover {
+.history-item:hover:not(.disabled) {
   background: rgba(255, 255, 255, 0.8);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   border-color: rgba(102, 126, 234, 0.2);
+}
+
+.history-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.history-item.disabled .item-main {
+  cursor: not-allowed;
 }
 
 .item-main {
@@ -179,8 +193,13 @@ const handleDelete = (itemId) => {
   transition: opacity 0.3s ease;
 }
 
-.history-item:hover .item-hint {
+.history-item:hover:not(.disabled) .item-hint {
   opacity: 1;
+}
+
+.history-item.disabled .item-hint {
+  opacity: 1;
+  color: #94a3b8;
 }
 
 .item-actions {

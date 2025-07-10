@@ -44,6 +44,7 @@
           <AudioHistory 
             v-if="audioHistory.length > 0"
             :history="audioHistory"
+            :is-playing="isPlaying"
             @select-item="handleSelectItem"
             @delete="handleDeleteHistory"
           />
