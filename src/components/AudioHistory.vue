@@ -1,14 +1,15 @@
 <template>
-  <div class="history-container" v-if="history.length > 0">
+  <div class="history-container">
     <div class="history-header">
       <div class="header-content">
         <div class="header-icon">📚</div>
         <span class="header-title">履歴</span>
-        <div class="history-count">{{ history.length }}</div>
+        <div v-if="history.length > 0" class="history-count">{{ history.length }}</div>
       </div>
     </div>
 
-    <div class="history-list">
+    <!-- 历史记录列表 -->
+    <div v-if="history.length > 0" class="history-list">
       <div 
         v-for="item in history" 
         :key="item.id"
@@ -32,6 +33,28 @@
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 空状态占位符 -->
+    <div v-else class="empty-state">
+      <div class="empty-content">
+        <div class="empty-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c.39 0 .78.02 1.17.06" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="empty-title">音声を作ってみましょう</h3>
+        <p class="empty-description">
+          テキストを入力して音声を生成すると、<br>
+          ここに履歴が表示されます
+        </p>
+        <div class="empty-animation">
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
         </div>
       </div>
     </div>
@@ -70,6 +93,9 @@ const handleDelete = (itemId) => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .history-container:hover {
@@ -120,9 +146,91 @@ const handleDelete = (itemId) => {
 }
 
 .history-list {
-  max-height: 320px;
+  flex: 1;
   overflow-y: auto;
   padding: 8px;
+}
+
+/* 空状态样式 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.empty-content {
+  text-align: center;
+  max-width: 280px;
+}
+
+.empty-icon {
+  margin-bottom: 24px;
+  opacity: 0.6;
+}
+
+.empty-icon svg {
+  color: #667eea;
+  animation: float 3s ease-in-out infinite;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.empty-description {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.empty-animation {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.wave {
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border-radius: 2px;
+  animation: wave 1.5s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.wave:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.wave:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    height: 8px;
+    opacity: 0.4;
+  }
+  50% {
+    height: 20px;
+    opacity: 0.8;
+  }
 }
 
 .history-item {

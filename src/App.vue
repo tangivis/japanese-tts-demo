@@ -2,6 +2,7 @@
   <div class="app">
     <div class="background-overlay"></div>
     <div class="main-container">
+      <!-- 顶部标题栏 -->
       <header class="app-header">
         <div class="header-content">
           <h1 class="title">
@@ -12,42 +13,49 @@
         </div>
       </header>
 
+      <!-- 主要内容区域 -->
       <main class="main-content">
-        <div class="content-wrapper">
-          <!-- 文本输入区域 -->
-          <TextInput
-            ref="textInputRef"
-            @text-submit="handleTextSubmit"
-            @text-change="handleTextChange"
-            :loading="processing"
-            :is-playing="isPlaying"
-            :has-audio="hasAudio"
-            :can-edit="canEdit"
-            :text-changed="textChanged"
-          />
-
-          <!-- 简化的播放控制器 -->
-          <div v-if="hasAudio" class="player-container">
-            <MiniPlayer
+        <div class="content-grid">
+          <!-- 左侧：文本输入区域 -->
+          <div class="input-section">
+            <TextInput
+              ref="textInputRef"
+              @text-submit="handleTextSubmit"
+              @text-change="handleTextChange"
+              :loading="processing"
               :is-playing="isPlaying"
               :has-audio="hasAudio"
-              :can-pause="canPause"
-              :is-paused="isPaused"
+              :can-edit="canEdit"
               :text-changed="textChanged"
-              @toggle-play="handleTogglePlay"
-              @stop-play="handleStopPlay"
-              @start-edit="handleStartEdit"
             />
           </div>
 
-          <!-- 历史记录 -->
-          <AudioHistory 
-            v-if="audioHistory.length > 0"
-            :history="audioHistory"
-            :is-playing="isPlaying"
-            @select-item="handleSelectItem"
-            @delete="handleDeleteHistory"
-          />
+          <!-- 右侧：播放器和历史记录 -->
+          <div class="control-section">
+            <!-- 播放控制器 -->
+            <div class="player-wrapper">
+              <MiniPlayer
+                :is-playing="isPlaying"
+                :has-audio="hasAudio"
+                :can-pause="canPause"
+                :is-paused="isPaused"
+                :text-changed="textChanged"
+                @toggle-play="handleTogglePlay"
+                @stop-play="handleStopPlay"
+                @start-edit="handleStartEdit"
+              />
+            </div>
+
+            <!-- 历史记录区域 -->
+            <div class="history-wrapper">
+              <AudioHistory 
+                :history="audioHistory"
+                :is-playing="isPlaying"
+                @select-item="handleSelectItem"
+                @delete="handleDeleteHistory"
+              />
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -55,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Microphone } from '@element-plus/icons-vue'
 import TextInput from './components/TextInput.vue'
@@ -262,14 +270,45 @@ const estimateDuration = (text) => {
   const charactersPerSecond = 8
   return Math.max(2, text.length / charactersPerSecond)
 }
+
+// 页面刷新或关闭时停止播放
+onBeforeUnmount(() => {
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel()
+  }
+  if (currentUtterance) {
+    currentUtterance = null
+  }
+  stopTimeTracking()
+})
+
+// 页面可见性变化时的处理
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && speechSynthesis.speaking) {
+      speechSynthesis.cancel()
+      isPlaying.value = false
+      stopTimeTracking()
+    }
+  })
+  
+  // 页面卸载时停止播放
+  window.addEventListener('beforeunload', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel()
+    }
+  })
+}
 </script>
 
 <style scoped>
 .app {
   min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   position: relative;
+  overflow: hidden;
 }
 
 .background-overlay {
@@ -287,25 +326,27 @@ const estimateDuration = (text) => {
 }
 
 .main-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 0;
 }
 
 .app-header {
-  padding: 40px 20px 20px;
+  padding: 32px 32px 24px;
   text-align: center;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .header-content {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
 .title {
   color: white;
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 700;
   margin: 0;
   display: flex;
@@ -316,67 +357,86 @@ const estimateDuration = (text) => {
 }
 
 .title-icon {
-  font-size: 2.2rem;
+  font-size: 2rem;
 }
 
 .subtitle {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
-  margin: 12px 0 0 0;
+  font-size: 1rem;
+  margin: 8px 0 0 0;
   font-weight: 400;
   letter-spacing: 0.025em;
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
+  padding: 0 32px 32px;
+  overflow: hidden;
 }
 
-.content-wrapper {
-  max-width: 700px;
-  width: 100%;
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.control-section {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-height: 0;
 }
 
-.player-container {
-  transform: translateY(0);
-  transition: all 0.3s ease;
+.player-wrapper {
+  flex-shrink: 0;
 }
 
-.player-container:hover {
-  transform: translateY(-2px);
+.history-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
-  .app-header {
-    padding: 30px 20px 15px;
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: 1fr 350px;
+    gap: 24px;
   }
-  
-  .title {
-    font-size: 2rem;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
+}
+
+@media (max-width: 968px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
   
   .main-content {
-    padding: 15px;
+    padding: 0 24px 24px;
   }
   
-  .content-wrapper {
+  .control-section {
     gap: 16px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .app-header {
+    padding: 24px 20px 20px;
+  }
+  
   .title {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
   
   .title-icon {
@@ -385,6 +445,38 @@ const estimateDuration = (text) => {
   
   .subtitle {
     font-size: 0.9rem;
+  }
+  
+  .main-content {
+    padding: 0 20px 20px;
+  }
+  
+  .content-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 20px 16px 16px;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .title-icon {
+    font-size: 1.6rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .main-content {
+    padding: 0 16px 16px;
   }
 }
 

@@ -265,6 +265,9 @@ defineExpose({
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .text-input-container.playing {
@@ -337,6 +340,8 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex: 1;
+  min-height: 0;
 }
 
 .upload-section {
@@ -379,6 +384,10 @@ defineExpose({
 
 .textarea-section {
   position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .textarea-wrapper {
@@ -386,6 +395,8 @@ defineExpose({
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
+  flex: 1;
+  min-height: 0;
 }
 
 .textarea-wrapper.disabled {
@@ -394,7 +405,8 @@ defineExpose({
 
 .smart-textarea {
   width: 100%;
-  min-height: 120px;
+  height: 100%;
+  min-height: 200px;
   padding: 16px;
   border: 2px solid rgba(102, 126, 234, 0.2);
   border-radius: 12px;
@@ -403,7 +415,7 @@ defineExpose({
   color: #1e293b;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  resize: vertical;
+  resize: none;
   transition: all 0.3s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
