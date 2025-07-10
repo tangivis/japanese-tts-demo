@@ -1,0 +1,271 @@
+<template>
+  <div class="info-dropdown" :class="{ 'is-open': isOpen }">
+    <button 
+      @click="toggleDropdown" 
+      class="dropdown-trigger"
+      :class="{ 'is-active': isOpen }"
+    >
+      <el-icon><InfoFilled /></el-icon>
+    </button>
+    
+    <transition name="dropdown">
+      <div v-if="isOpen" class="dropdown-content">
+        <div class="dropdown-section">
+          <h3 class="section-title">🎯 主要功能</h3>
+          <ul class="feature-list">
+            <li>日本語TTS音声合成</li>
+            <li>テキスト/ファイル入力</li>
+            <li>リアルタイム再生制御</li>
+            <li>音声履歴管理</li>
+            <li>オフライン動作</li>
+          </ul>
+        </div>
+        
+        <div class="dropdown-section">
+          <h3 class="section-title">⚡ 技術スタック</h3>
+          <ul class="tech-list">
+            <li>Vue.js 3 + Composition API</li>
+            <li>Web Speech API</li>
+            <li>Element Plus UI</li>
+            <li>Vite ビルドツール</li>
+          </ul>
+        </div>
+        
+        <div class="dropdown-section">
+          <h3 class="section-title">📋 操作手順</h3>
+          <ol class="instruction-list">
+            <li>テキストを入力またはファイルアップロード</li>
+            <li>「音声を生成」ボタンをクリック</li>
+            <li>自動再生開始、制御ボタンで操作</li>
+            <li>履歴から過去のテキストを再選択可能</li>
+          </ol>
+        </div>
+        
+        <div class="dropdown-section">
+          <h3 class="section-title">🔧 開発TODO</h3>
+          <ul class="todo-list">
+            <li>PDF/DOCX対応</li>
+            <li>音声速度調整</li>
+            <li>ダークモード</li>
+            <li>プログレスバー</li>
+            <li>音声エクスポート</li>
+          </ul>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import { InfoFilled } from '@element-plus/icons-vue'
+
+const isOpen = ref(false)
+
+const toggleDropdown = () => {
+  isOpen.value = !isOpen.value
+}
+
+const closeDropdown = (event) => {
+  if (!event.target.closest('.info-dropdown')) {
+    isOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdown)
+})
+</script>
+
+<style scoped>
+.info-dropdown {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.dropdown-trigger {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dropdown-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-trigger.is-active {
+  transform: rotate(180deg);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.dropdown-content {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transform-origin: bottom right;
+}
+
+.dropdown-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feature-list,
+.tech-list,
+.instruction-list,
+.todo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-list li,
+.tech-list li,
+.todo-list li {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  padding-left: 12px;
+  position: relative;
+}
+
+.feature-list li:before,
+.tech-list li:before,
+.todo-list li:before {
+  content: "•";
+  color: #667eea;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.instruction-list {
+  counter-reset: step-counter;
+}
+
+.instruction-list li {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  padding-left: 20px;
+  position: relative;
+  counter-increment: step-counter;
+}
+
+.instruction-list li:before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .info-dropdown {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .dropdown-trigger {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+  
+  .dropdown-content {
+    width: 280px;
+    bottom: 60px;
+  }
+  
+  .dropdown-section {
+    padding: 12px 16px;
+  }
+  
+  .section-title {
+    font-size: 13px;
+  }
+  
+  .feature-list li,
+  .tech-list li,
+  .instruction-list li,
+  .todo-list li {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-dropdown {
+    bottom: 16px;
+    right: 16px;
+  }
+  
+  .dropdown-content {
+    width: 260px;
+    right: -40px;
+  }
+}
+</style>

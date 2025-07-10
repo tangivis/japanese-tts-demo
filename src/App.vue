@@ -59,6 +59,9 @@
         </div>
       </main>
     </div>
+    
+    <!-- 信息下拉菜单 -->
+    <InfoDropdown />
   </div>
 </template>
 
@@ -69,6 +72,7 @@ import { Microphone } from '@element-plus/icons-vue'
 import TextInput from './components/TextInput.vue'
 import MiniPlayer from './components/MiniPlayer.vue'
 import AudioHistory from './components/AudioHistory.vue'
+import InfoDropdown from './components/InfoDropdown.vue'
 import { useTTS } from './composables/useTTS'
 
 const { generateAudio, isGenerating, createControlledSpeech } = useTTS()
