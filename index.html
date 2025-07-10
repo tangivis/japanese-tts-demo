@@ -3,60 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japanese TTS Demo - 日本語技術文書対話学習</title>
-    <link rel="stylesheet" href="src/style.css">
+    <title>日本語 TTS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>日本語技術文書対話学習</h1>
-            <p>技術文書を自然な日本語対話に変換して学習します</p>
-        </header>
-
-        <main>
-            <section class="upload-section">
-                <h2>文書アップロード</h2>
-                <div class="upload-area" id="uploadArea">
-                    <p>技術文書をここにドラッグ&ドロップするか、クリックして選択してください</p>
-                    <input type="file" id="fileInput" accept=".txt,.md,.pdf" style="display: none;">
-                    <button id="uploadBtn">ファイルを選択</button>
-                </div>
-                <div class="text-input">
-                    <textarea id="textInput" placeholder="または、ここに直接テキストを貼り付けてください..."></textarea>
-                    <button id="processBtn">音声を生成</button>
-                </div>
-            </section>
-
-            <section class="player-section" id="playerSection">
-                <h2>音声プレイヤー</h2>
-                <div class="player-controls">
-                    <button id="playBtn" disabled>▶ 再生</button>
-                    <button id="pauseBtn" disabled>⏸ 一時停止</button>
-                    <button id="stopBtn" disabled>⏹ 停止</button>
-                    <button id="downloadBtn" disabled>⬇ 音声ダウンロード</button>
-                    <button id="newAudioBtn" disabled>🔄 新しい音声を生成</button>
-                </div>
-
-                <div class="progress-info">
-                    <span id="currentTime">00:00</span>
-                    <progress id="progressBar" value="0" max="100" disabled></progress>
-                    <span id="totalTime">00:00</span>
-                </div>
-            </section>
-
-            <section class="audio-list-section" id="audioListSection">
-                <h2>音声履歴</h2>
-                <div class="audio-list" id="audioList">
-                    <p class="no-audio-message">まだ音声が生成されていません</p>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>技術文書の理解を深めるための音声学習ツール</p>
-        </footer>
-    </div>
-
-    <script src="src/app.js"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
 </body>
 </html>
