@@ -17,7 +17,6 @@
         <div class="item-main" @click="handleItemClick(item)">
           <div class="item-text">{{ item.text }}</div>
           <div class="item-meta">
-            <span class="item-time">{{ formatTime(item.timestamp) }}</span>
             <span class="item-hint">クリックして使用</span>
           </div>
         </div>
@@ -54,26 +53,6 @@ const handleItemClick = (item) => {
 
 const handleDelete = (itemId) => {
   emit('delete', itemId)
-}
-
-const formatTime = (timestamp) => {
-  const now = new Date()
-  const time = new Date(timestamp)
-  const diffInHours = (now - time) / (1000 * 60 * 60)
-  
-  if (diffInHours < 1) {
-    const minutes = Math.floor((now - time) / (1000 * 60))
-    return minutes < 1 ? 'たった今' : `${minutes}分前`
-  } else if (diffInHours < 24) {
-    return `${Math.floor(diffInHours)}時間前`
-  } else {
-    return time.toLocaleDateString('ja-JP', { 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
 }
 </script>
 
@@ -191,11 +170,6 @@ const formatTime = (timestamp) => {
   align-items: center;
   gap: 12px;
   font-size: 12px;
-}
-
-.item-time {
-  color: #64748b;
-  font-weight: 400;
 }
 
 .item-hint {

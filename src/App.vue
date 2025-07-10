@@ -182,8 +182,10 @@ const handleStartEdit = () => {
 }
 
 const handleTextChange = (newText) => {
+  // 如果文本发生变化，启用编辑模式
   if (hasAudio.value && newText !== lastGeneratedText.value) {
     textChanged.value = true
+    canEdit.value = true // 确保可以编辑和生成
   } else {
     textChanged.value = false
   }
