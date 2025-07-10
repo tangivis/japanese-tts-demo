@@ -16,14 +16,6 @@
           </el-icon>
         </el-button>
 
-        <el-button
-          size="large"
-          circle
-          @click="$emit('stop')"
-          class="stop-btn"
-        >
-          <el-icon size="18"><RefreshLeft /></el-icon>
-        </el-button>
       </div>
 
       <!-- 时间和进度 -->
@@ -43,9 +35,9 @@
 </template>
 
 <script setup>
-import { VideoPlay, VideoPause, RefreshLeft } from '@element-plus/icons-vue'
+import { VideoPlay, VideoPause } from '@element-plus/icons-vue'
 
-defineEmits(['togglePlay', 'stop'])
+defineEmits(['togglePlay'])
 
 defineProps({
   isPlaying: {
@@ -118,19 +110,6 @@ const formatTime = (seconds) => {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.stop-btn {
-  width: 44px;
-  height: 44px;
-  background: rgba(107, 114, 128, 0.1);
-  border: 1px solid rgba(107, 114, 128, 0.2);
-  color: #6b7280;
-  transition: all 0.3s ease;
-}
-
-.stop-btn:hover {
-  background: rgba(107, 114, 128, 0.2);
-  color: #374151;
-}
 
 .progress-info {
   flex: 1;
