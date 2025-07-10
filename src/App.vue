@@ -15,6 +15,7 @@
         <div class="content-wrapper">
           <!-- 文本输入区域 -->
           <TextInput 
+            ref="textInputRef"
             @text-submit="handleTextSubmit"
             :loading="processing"
           />
@@ -23,7 +24,6 @@
           <AudioPlayer 
             v-if="hasAudio"
             :audio-data="currentAudio"
-            @download="handleDownload"
             @clear="handleClear"
           />
           
@@ -54,6 +54,7 @@ const processing = ref(false)
 const hasAudio = ref(false)
 const currentAudio = ref(null)
 const audioHistory = ref([])
+const textInputRef = ref(null)
 
 const handleTextSubmit = async (text) => {
   if (!text.trim()) {
@@ -123,6 +124,10 @@ const handleDownload = () => {
 const handleClear = () => {
   currentAudio.value = null
   hasAudio.value = false
+  // 清除TextInput组件中的文字
+  if (textInputRef.value) {
+    textInputRef.value.clearText()
+  }
 }
 </script>
 

@@ -103,6 +103,11 @@ const submitText = () => {
 const clearText = () => {
   text.value = ''
 }
+
+// 暴露clearText方法给父组件
+defineExpose({
+  clearText
+})
 </script>
 
 <style scoped>

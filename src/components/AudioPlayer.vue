@@ -49,15 +49,6 @@
       <!-- 操作按钮 -->
       <div class="action-buttons">
         <el-button
-          type="success"
-          @click="$emit('download')"
-          :disabled="!audioData || audioData?.isWebSpeech"
-        >
-          <el-icon><Download /></el-icon>
-          ダウンロード
-        </el-button>
-        
-        <el-button
           @click="$emit('clear')"
           :disabled="!audioData"
         >
@@ -71,9 +62,9 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from 'vue'
-import { VideoPlay, VideoPause, RefreshLeft, Download, Delete } from '@element-plus/icons-vue'
+import { VideoPlay, VideoPause, RefreshLeft, Delete } from '@element-plus/icons-vue'
 
-const emit = defineEmits(['download', 'clear'])
+const emit = defineEmits(['clear'])
 
 const props = defineProps({
   audioData: {
