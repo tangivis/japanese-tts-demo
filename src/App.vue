@@ -18,7 +18,7 @@
           <TextInput 
             ref="textInputRef"
             @text-submit="handleTextSubmit"
-            @stop-playing="handleStopFromInput"
+            @stop-playing="handleStopToEdit"
             :loading="processing"
             :is-playing="isPlaying"
             :has-audio="hasAudio"
@@ -33,7 +33,7 @@
               :is-paused="isPaused"
               @toggle-play="handleTogglePlay"
               @stop-play="handleStopPlay"
-              @stop-to-edit="handleStopFromInput"
+              @stop-to-edit="handleStopToEdit"
             />
           </div>
           
@@ -170,8 +170,9 @@ const handleStopPlay = () => {
   currentPlayingId.value = null
 }
 
-const handleStopFromInput = () => {
+const handleStopToEdit = () => {
   handleStopPlay()
+  // 可以在这里添加额外的编辑相关逻辑
 }
 
 const handleSelectItem = async (item) => {

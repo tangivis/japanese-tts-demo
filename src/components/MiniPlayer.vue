@@ -1,37 +1,28 @@
 <template>
   <div class="mini-player" :class="{ 'playing': isPlaying, 'no-audio': !hasAudio }">
     <div class="player-content">
-      <!-- 播放控制 -->
+      <!-- 优化后的播放控制 -->
       <div class="player-controls">
+        <!-- 主要播放控制按钮 -->
         <button
           :disabled="!hasAudio"
-          @click="$emit('togglePlay')"
-          class="play-btn"
-          :class="{ 'playing': isPlaying }"
-          :title="getPlayButtonTitle()"
+          @click="handlePrimaryAction"
+          class="primary-btn"
+          :class="{ 'playing': isPlaying, 'stop-mode': isPlaying }"
+          :title="getPrimaryButtonTitle()"
         >
-          <div class="play-icon">
-            <div v-if="isPlaying" class="pause-bars">
-              <span></span>
-              <span></span>
+          <div class="primary-icon">
+            <div v-if="isPlaying" class="stop-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <rect x="6" y="6" width="12" height="12" fill="currentColor" rx="2"/>
+              </svg>
             </div>
             <div v-else class="play-triangle"></div>
           </div>
           <div v-if="isPlaying" class="ripple-effect"></div>
         </button>
 
-        <!-- 停止按钮和编辑按钮（仅在播放时显示） -->
-        <button
-          v-if="isPlaying"
-          @click="$emit('stopPlay')"
-          class="stop-btn"
-          title="停止播放"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <rect x="6" y="6" width="12" height="12" fill="currentColor" rx="2"/>
-          </svg>
-        </button>
-        
+        <!-- 编辑按钮（仅在播放时显示） -->
         <button
           v-if="isPlaying"
           @click="$emit('stopToEdit')"
@@ -49,8 +40,7 @@
       <div class="status-info">
         <div class="status-text">
           <span v-if="!hasAudio" class="hint-text">音声を生成してください</span>
-          <span v-else-if="isPlaying && canPause" class="playing-text">再生中（クリックで一時停止）</span>
-          <span v-else-if="isPlaying && !canPause" class="playing-text">再生中</span>
+          <span v-else-if="isPlaying" class="playing-text">再生中（クリックで停止）</span>
           <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中（クリックで再開）</span>
           <span v-else class="ready-text">再生準備完了</span>
         </div>
@@ -69,7 +59,7 @@
 </template>
 
 <script setup>
-defineEmits(['togglePlay', 'stopPlay', 'stopToEdit'])
+const emit = defineEmits(['togglePlay', 'stopPlay', 'stopToEdit'])
 
 const props = defineProps({
   isPlaying: {
@@ -90,13 +80,19 @@ const props = defineProps({
   }
 })
 
-const getPlayButtonTitle = () => {
+const getPrimaryButtonTitle = () => {
   if (!props.hasAudio) return '音声を生成してください'
-  if (props.isPlaying) {
-    return props.canPause ? 'クリックで一時停止' : '停止ボタンで停止'
-  }
+  if (props.isPlaying) return 'クリックで停止'
   if (props.isPaused) return 'クリックで再開'
   return 'クリックで再生'
+}
+
+const handlePrimaryAction = () => {
+  if (props.isPlaying) {
+    emit('stopPlay')
+  } else {
+    emit('togglePlay')
+  }
 }
 </script>
 
@@ -137,7 +133,7 @@ const getPlayButtonTitle = () => {
   flex-shrink: 0;
 }
 
-.play-btn {
+.primary-btn {
   width: 64px;
   height: 64px;
   border: none;
@@ -153,43 +149,30 @@ const getPlayButtonTitle = () => {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
-.stop-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+.primary-btn.stop-mode {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
 }
 
-.play-btn:disabled {
+.primary-btn:disabled {
   background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
   cursor: not-allowed;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.play-btn:not(:disabled):hover {
+.primary-btn:not(:disabled):hover {
   transform: scale(1.08);
+}
+
+.primary-btn:not(:disabled):hover:not(.stop-mode) {
   box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
 }
 
-.play-btn:not(:disabled):active {
-  transform: scale(0.95);
+.primary-btn:not(:disabled):hover.stop-mode {
+  box-shadow: 0 8px 28px rgba(239, 68, 68, 0.4);
 }
 
-.stop-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #b91c1c;
-  transform: scale(1.05);
-}
-
-.stop-btn:active {
+.primary-btn:not(:disabled):active {
   transform: scale(0.95);
 }
 
@@ -218,7 +201,7 @@ const getPlayButtonTitle = () => {
   transform: scale(0.95);
 }
 
-.play-icon {
+.primary-icon {
   position: relative;
   z-index: 2;
 }
@@ -232,16 +215,11 @@ const getPlayButtonTitle = () => {
   margin-left: 3px;
 }
 
-.pause-bars {
+.stop-icon {
   display: flex;
-  gap: 4px;
-}
-
-.pause-bars span {
-  width: 4px;
-  height: 16px;
-  background: white;
-  border-radius: 2px;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
 .ripple-effect {
@@ -363,7 +341,7 @@ const getPlayButtonTitle = () => {
     gap: 16px;
   }
   
-  .play-btn {
+  .primary-btn {
     width: 56px;
     height: 56px;
   }
@@ -374,9 +352,9 @@ const getPlayButtonTitle = () => {
     border-bottom: 6px solid transparent;
   }
   
-  .pause-bars span {
-    width: 3px;
-    height: 14px;
+  .stop-icon svg {
+    width: 16px;
+    height: 16px;
   }
   
   .status-text {
