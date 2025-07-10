@@ -67,15 +67,11 @@
           ></textarea>
         </div>
 
-        <!-- 字符计数和提示 -->
+        <!-- 提示 -->
         <div class="textarea-footer" v-show="!isPlaying && canEdit">
-          <div class="char-count" :class="{ 'warning': text.length > 1000 }">
-            {{ text.length }} / 2000字
-          </div>
           <div class="input-hints">
             <span v-if="text.length === 0" class="hint">日本語のテキストを入力してください</span>
             <span v-else-if="text.length < 10" class="hint">もう少し長いテキストをお試しください</span>
-            <span v-else-if="text.length > 1000" class="warning-hint">長いテキストは生成に時間がかかります</span>
             <span v-else-if="hasAudio && textChanged" class="changed-hint">テキストが変更されました。新しい音声を生成してください。</span>
             <span v-else-if="hasAudio && !textChanged" class="synced-hint">音声と同期済み</span>
             <span v-else class="ready-hint">音声生成できます</span>
@@ -154,9 +150,8 @@ const fileInput = ref(null)
 const textareaRef = ref(null)
 
 const canGenerate = computed(() => {
-  // 基本条件：有文本内容，不超长，不在加载中
+  // 基本条件：有文本内容，不在加载中
   const basicConditions = text.value.trim().length >= 1 && 
-                         text.value.length <= 2000 && 
                          !props.loading
 
   // 生成条件：没有音频 或者 文本已修改
@@ -527,20 +522,10 @@ defineExpose({
 
 .textarea-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: 12px;
   padding: 0 4px;
-}
-
-.char-count {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.char-count.warning {
-  color: #dc2626;
 }
 
 .input-hints {
