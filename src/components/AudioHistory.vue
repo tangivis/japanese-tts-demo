@@ -14,37 +14,42 @@
         :key="item.id"
         class="history-item"
         :class="{ 'current': item.id === currentItemId }"
-        @click="handleItemClick(item)"
       >
-        <div class="item-main">
+        <div class="item-main" @click="handleItemClick(item)">
           <div class="item-text">{{ item.text }}</div>
           <div class="item-meta">
             <span class="item-time">{{ formatTime(item.timestamp) }}</span>
-            <span class="item-action-hint">タップして再生</span>
           </div>
         </div>
         
-        <div class="item-status">
-          <div v-if="item.id === currentItemId" class="status-indicator playing">
-            <div class="pulse-ring"></div>
-            <div class="pulse-dot"></div>
-          </div>
-          <div v-else class="status-indicator idle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M8 5v14l11-7z" fill="currentColor"/>
+        <div class="item-actions">
+          <button 
+            class="play-btn"
+            @click="handleItemClick(item)"
+            :class="{ 'playing': item.id === currentItemId }"
+            :title="item.id === currentItemId ? '再生中' : '再生'"
+          >
+            <div v-if="item.id === currentItemId" class="status-indicator playing">
+              <div class="pulse-ring"></div>
+              <div class="pulse-dot"></div>
+            </div>
+            <div v-else class="status-indicator idle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M8 5v14l11-7z" fill="currentColor"/>
+              </svg>
+            </div>
+          </button>
+          
+          <button 
+            class="delete-btn"
+            @click="handleDelete(item.id)"
+            title="削除"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-          </div>
+          </button>
         </div>
-
-        <button 
-          class="delete-btn"
-          @click.stop="handleDelete(item.id)"
-          title="削除"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
       </div>
     </div>
   </div>
@@ -164,7 +169,6 @@ const formatTime = (timestamp) => {
   padding: 16px;
   margin-bottom: 4px;
   border-radius: 16px;
-  cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   background: rgba(255, 255, 255, 0.4);
@@ -187,6 +191,14 @@ const formatTime = (timestamp) => {
 .item-main {
   flex: 1;
   min-width: 0;
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.item-main:hover {
+  background: rgba(102, 126, 234, 0.05);
 }
 
 .item-text {
@@ -213,38 +225,42 @@ const formatTime = (timestamp) => {
   font-weight: 400;
 }
 
-.item-action-hint {
-  color: #667eea;
-  font-weight: 500;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.history-item:hover .item-action-hint {
-  opacity: 1;
-}
-
-.history-item.current .item-action-hint {
-  opacity: 0;
-}
-
-.item-status {
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+}
+
+.play-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.play-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #5a67d8;
+  transform: scale(1.05);
+}
+
+.play-btn.playing {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border-color: rgba(102, 126, 234, 0.4);
 }
 
 .status-indicator.idle {
-  color: #94a3b8;
+  color: inherit;
   transition: all 0.3s ease;
-}
-
-.history-item:hover .status-indicator.idle {
-  color: #667eea;
-  transform: scale(1.1);
 }
 
 .status-indicator.playing {
@@ -285,31 +301,24 @@ const formatTime = (timestamp) => {
 }
 
 .delete-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border: none;
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
-  opacity: 0;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.history-item:hover .delete-btn {
-  opacity: 1;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .delete-btn:hover {
   background: rgba(239, 68, 68, 0.2);
   color: #dc2626;
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .delete-btn:active {
@@ -360,6 +369,16 @@ const formatTime = (timestamp) => {
   .history-list {
     max-height: 280px;
   }
+  
+  .play-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .delete-btn {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -391,8 +410,18 @@ const formatTime = (timestamp) => {
     -webkit-line-clamp: 1;
   }
   
-  .item-action-hint {
-    display: none;
+  .item-actions {
+    gap: 6px;
+  }
+  
+  .play-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .delete-btn {
+    width: 24px;
+    height: 24px;
   }
 }
 </style>
