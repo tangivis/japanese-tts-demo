@@ -39,22 +39,44 @@
 
     <!-- 空状态占位符 -->
     <div v-else class="empty-state">
-      <div class="empty-content">
-        <div class="empty-icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c.39 0 .78.02 1.17.06" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div class="skeleton-list">
+        <!-- 拟物历史条目 1 -->
+        <div class="skeleton-item">
+          <div class="skeleton-content">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-subtitle"></div>
+          </div>
+          <div class="skeleton-actions">
+            <div class="skeleton-button"></div>
+          </div>
         </div>
-        <h3 class="empty-title">音声を作ってみましょう</h3>
-        <p class="empty-description">
-          テキストを入力して音声を生成すると、<br>
-          ここに履歴が表示されます
-        </p>
-        <div class="empty-animation">
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
+        
+        <!-- 拟物历史条目 2 -->
+        <div class="skeleton-item skeleton-delay-1">
+          <div class="skeleton-content">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-subtitle"></div>
+          </div>
+          <div class="skeleton-actions">
+            <div class="skeleton-button"></div>
+          </div>
+        </div>
+        
+        <!-- 拟物历史条目 3 -->
+        <div class="skeleton-item skeleton-delay-2">
+          <div class="skeleton-content">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-subtitle"></div>
+          </div>
+          <div class="skeleton-actions">
+            <div class="skeleton-button"></div>
+          </div>
+        </div>
+        
+        <!-- 微妙的提示 -->
+        <div class="gentle-hint">
+          <div class="hint-icon">✨</div>
+          <span>音声履歴がここに表示されます</span>
         </div>
       </div>
     </div>
@@ -151,85 +173,160 @@ const handleDelete = (itemId) => {
   padding: 8px;
 }
 
-/* 空状态样式 */
+/* 拟物列表骨架屏样式 */
 .empty-state {
   flex: 1;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+.skeleton-delay-1::before {
+  animation-delay: 0.5s;
+}
+
+.skeleton-delay-2::before {
+  animation-delay: 1s;
+}
+
+.skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-text {
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-title {
+  height: 16px;
+  width: 80%;
+}
+
+.skeleton-subtitle {
+  height: 12px;
+  width: 60%;
+  background: rgba(102, 126, 234, 0.15);
+}
+
+.skeleton-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skeleton-button {
+  width: 32px;
+  height: 32px;
+  background: rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+.gentle-hint {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 16px;
+  color: rgba(102, 126, 234, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  animation: fadeIn 1s ease-in-out 2s forwards;
 }
 
-.empty-content {
-  text-align: center;
-  max-width: 280px;
+.hint-icon {
+  font-size: 16px;
+  animation: twinkle 3s ease-in-out infinite;
 }
 
-.empty-icon {
-  margin-bottom: 24px;
-  opacity: 0.6;
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
-.empty-icon svg {
-  color: #667eea;
-  animation: float 3s ease-in-out infinite;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.empty-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 12px 0;
-  line-height: 1.4;
-}
-
-.empty-description {
-  font-size: 14px;
-  color: #64748b;
-  line-height: 1.5;
-  margin: 0 0 24px 0;
-}
-
-.empty-animation {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-}
-
-.wave {
-  width: 4px;
-  height: 20px;
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  border-radius: 2px;
-  animation: wave 1.5s ease-in-out infinite;
-  opacity: 0.6;
-}
-
-.wave:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.wave:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes float {
+@keyframes twinkle {
   0%, 100% {
-    transform: translateY(0px);
+    opacity: 0.5;
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes wave {
-  0%, 100% {
-    height: 8px;
-    opacity: 0.4;
-  }
-  50% {
-    height: 20px;
-    opacity: 0.8;
+    opacity: 1;
+    transform: scale(1.1);
   }
 }
 

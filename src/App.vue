@@ -302,6 +302,20 @@ if (typeof document !== 'undefined') {
 </script>
 
 <style scoped>
+/* 全局重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 .app {
   min-height: 100vh;
   height: 100vh;
@@ -309,6 +323,8 @@ if (typeof document !== 'undefined') {
   font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   position: relative;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .background-overlay {
@@ -323,6 +339,8 @@ if (typeof document !== 'undefined') {
     radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
+  margin: 0;
+  padding: 0;
 }
 
 .main-container {
@@ -330,6 +348,7 @@ if (typeof document !== 'undefined') {
   display: flex;
   flex-direction: column;
   padding: 0;
+  margin: 0;
 }
 
 .app-header {

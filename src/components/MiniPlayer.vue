@@ -127,7 +127,7 @@ const handlePrimaryAction = () => {
 
 .mini-player.playing {
   background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-4px);
+  transform: scale(1.02);
   box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
 }
 
