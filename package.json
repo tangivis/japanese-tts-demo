@@ -4,7 +4,7 @@
   "description": "Japanese Technical Document to Dialogue TTS Demo",
   "main": "index.js",
   "scripts": {
-    "dev": "http-server -p 3000 -c-1",
+    "dev": "http-server -p 6060 -c-1",
     "build": "echo 'Building static files...'",
     "deploy": "echo 'Deploy to Cloudflare Pages...'"
   },

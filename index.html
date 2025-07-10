@@ -23,40 +23,31 @@
                 </div>
                 <div class="text-input">
                     <textarea id="textInput" placeholder="または、ここに直接テキストを貼り付けてください..."></textarea>
-                    <button id="processBtn">対話を生成</button>
+                    <button id="processBtn">音声を生成</button>
                 </div>
             </section>
 
-            <section class="player-section" id="playerSection" style="display: none;">
-                <h2>対話プレイヤー</h2>
-                <div class="audio-player">
-                    <audio id="audioPlayer" controls>
-                        <source src="" type="audio/mpeg">
-                        お使いのブラウザはオーディオ要素をサポートしていません。
-                    </audio>
-                </div>
-                
+            <section class="player-section" id="playerSection">
+                <h2>音声プレイヤー</h2>
                 <div class="player-controls">
-                    <button id="playBtn">▶ 再生</button>
-                    <button id="pauseBtn">⏸ 一時停止</button>
-                    <button id="stopBtn">⏹ 停止</button>
-                    <button id="showScriptBtn">📝 スクリプト表示</button>
+                    <button id="playBtn" disabled>▶ 再生</button>
+                    <button id="pauseBtn" disabled>⏸ 一時停止</button>
+                    <button id="stopBtn" disabled>⏹ 停止</button>
+                    <button id="downloadBtn" disabled>⬇ 音声ダウンロード</button>
+                    <button id="newAudioBtn" disabled>🔄 新しい音声を生成</button>
                 </div>
 
                 <div class="progress-info">
                     <span id="currentTime">00:00</span>
-                    <progress id="progressBar" value="0" max="100"></progress>
+                    <progress id="progressBar" value="0" max="100" disabled></progress>
                     <span id="totalTime">00:00</span>
                 </div>
             </section>
 
-            <section class="script-section" id="scriptSection" style="display: none;">
-                <h2>対話スクリプト</h2>
-                <div class="script-content" id="scriptContent">
-                    <div class="dialogue-entry">
-                        <div class="speaker senior">先輩：</div>
-                        <div class="text">こちらが対話スクリプトです...</div>
-                    </div>
+            <section class="audio-list-section" id="audioListSection">
+                <h2>音声履歴</h2>
+                <div class="audio-list" id="audioList">
+                    <p class="no-audio-message">まだ音声が生成されていません</p>
                 </div>
             </section>
         </main>
