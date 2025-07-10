@@ -61,48 +61,66 @@ defineProps({
 
 <style scoped>
 .history-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.history-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1f2937;
+  font-size: 1rem;
 }
 
 .header-icon {
-  color: #e6a23c;
+  color: #f59e0b;
+  font-size: 1.2rem;
 }
 
 .history-badge {
   margin-left: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
 }
 
 .history-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 300px;
+  gap: 8px;
+  max-height: 280px;
   overflow-y: auto;
+  padding: 4px;
 }
 
 .history-item {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .history-item:hover {
-  background: #e9ecef;
+  background: rgba(255, 255, 255, 0.8);
   transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .item-content {
@@ -112,20 +130,53 @@ defineProps({
 
 .item-text {
   font-size: 14px;
-  color: #2c3e50;
+  color: #1f2937;
   margin-bottom: 4px;
   word-break: break-word;
+  line-height: 1.4;
+  font-weight: 500;
 }
 
 .item-time {
   font-size: 12px;
-  color: #909399;
+  color: #6b7280;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', 'Monaco', 'Consolas', monospace;
 }
 
 .item-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
+}
+
+.item-actions .el-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.item-actions .el-button[type="primary"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.item-actions .el-button[type="primary"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.item-actions .el-button[type="danger"] {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.item-actions .el-button[type="danger"]:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #b91c1c;
+  transform: scale(1.05);
 }
 
 /* 自定义滚动条 */
@@ -134,17 +185,18 @@ defineProps({
 }
 
 .history-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 3px;
 }
 
 .history-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: rgba(102, 126, 234, 0.3);
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 .history-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: rgba(102, 126, 234, 0.5);
 }
 
 @media (max-width: 768px) {
@@ -152,10 +204,31 @@ defineProps({
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    padding: 12px;
   }
   
   .item-actions {
     justify-content: center;
+    gap: 8px;
+  }
+  
+  .item-actions .el-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-content {
+    max-height: 240px;
+  }
+  
+  .item-text {
+    font-size: 13px;
+  }
+  
+  .item-time {
+    font-size: 11px;
   }
 }
 </style>
