@@ -149,10 +149,15 @@ const fileInput = ref(null)
 const textareaRef = ref(null)
 
 const canGenerate = computed(() => {
-  return text.value.trim().length >= 1 && 
-         text.value.length <= 2000 && 
-         !props.loading && 
-         (props.textChanged || !props.hasAudio)
+  // 基本条件：有文本内容，不超长，不在加载中
+  const basicConditions = text.value.trim().length >= 1 && 
+                         text.value.length <= 2000 && 
+                         !props.loading
+
+  // 生成条件：没有音频 或者 文本已修改
+  const generateConditions = !props.hasAudio || props.textChanged
+  
+  return basicConditions && generateConditions
 })
 
 const getPlaceholder = () => {

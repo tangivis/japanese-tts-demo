@@ -194,14 +194,14 @@ const handleSelectItem = async (item) => {
     textInputRef.value.setText(item.fullText)
     canEdit.value = true
     hasAudio.value = false
-    textChanged.value = false
+    textChanged.value = true // 选择历史记录算作文本修改
     lastGeneratedText.value = ''
   }
   
   await nextTick()
   textInputRef.value?.focusTextarea()
   
-  ElMessage.info('テキストを输入框に設定しました')
+  ElMessage.info('テキストを入力框に設定しました')
 }
 
 const startTimeTracking = () => {
