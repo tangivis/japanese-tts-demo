@@ -41,7 +41,7 @@
           :max="100"
           class="progress-slider"
           @change="handleSeek"
-          :disabled="!audioData"
+          :disabled="!audioData || audioData?.isWebSpeech"
         />
         <span class="time-display">{{ formatTime(duration) }}</span>
       </div>
@@ -196,6 +196,11 @@ const stop = () => {
 }
 
 const handleSeek = (value) => {
+  // Web Speech API不支持拖动
+  if (props.audioData?.isWebSpeech) {
+    return
+  }
+  
   if (audioPlayer.value && duration.value > 0) {
     const newTime = (value / 100) * duration.value
     audioPlayer.value.currentTime = newTime
