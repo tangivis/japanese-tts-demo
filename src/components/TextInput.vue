@@ -46,10 +46,10 @@
             rows="6"
           ></textarea>
           
-          <!-- 播放或锁定时的覆盖层 -->
-          <div v-if="isPlaying || (!canEdit && hasAudio)" class="locked-overlay">
-            <div class="locked-content">
-              <div v-if="isPlaying" class="playing-icon">
+          <!-- 播放时的覆盖层 -->
+          <div v-if="isPlaying" class="playing-overlay">
+            <div class="playing-content">
+              <div class="playing-icon">
                 <div class="sound-waves">
                   <span></span>
                   <span></span>
@@ -57,15 +57,7 @@
                   <span></span>
                 </div>
               </div>
-              <div v-else class="locked-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
-                </svg>
-              </div>
-              <p class="overlay-message">
-                {{ isPlaying ? '音声再生中...' : 'テキストがロックされています' }}
-              </p>
+              <p class="overlay-message">音声再生中...</p>
             </div>
           </div>
         </div>
@@ -420,12 +412,12 @@ defineExpose({
 }
 
 .smart-textarea:disabled {
-  opacity: 0.6;
-  background: rgba(248, 250, 252, 0.8);
+  opacity: 0.5;
+  background: rgba(248, 250, 252, 0.5);
   color: #94a3b8;
 }
 
-.locked-overlay {
+.playing-overlay {
   position: absolute;
   top: 2px;
   left: 2px;
@@ -439,7 +431,7 @@ defineExpose({
   border-radius: 10px;
 }
 
-.locked-content {
+.playing-content {
   text-align: center;
   padding: 20px;
 }
@@ -470,11 +462,6 @@ defineExpose({
 @keyframes soundWave {
   0%, 100% { height: 8px; opacity: 0.4; }
   50% { height: 32px; opacity: 1; }
-}
-
-.locked-icon {
-  margin-bottom: 16px;
-  color: #64748b;
 }
 
 .overlay-message {
