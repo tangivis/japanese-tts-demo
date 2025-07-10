@@ -203,11 +203,14 @@ const addToHistory = (text) => {
   }
 }
 
-const handleReplay = (item) => {
+const handleReplay = async (item) => {
   // 设置文字到输入框
   if (textInputRef.value) {
     textInputRef.value.setText(item.fullText)
   }
+  
+  // 等待下一个tick确保文字已设置
+  await nextTick()
   
   // 直接播放
   duration.value = estimateDuration(item.fullText)
