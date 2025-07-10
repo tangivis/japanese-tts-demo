@@ -35,16 +35,12 @@
       <div class="textarea-section">
         <!-- 智能编辑状态提示 -->
         <div v-if="hasAudio && !canEdit && !isPlaying" class="edit-prompt">
-          <div class="edit-prompt-content" @click="enableEdit">
-            <div class="edit-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <span class="edit-text">テキストを編集</span>
-            <div class="edit-arrow">➜</div>
-          </div>
+          <button class="edit-btn" @click="enableEdit" title="テキストを編集">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
         
         <div class="textarea-wrapper" :class="{ 'disabled': isPlaying || (!canEdit && hasAudio) }">
@@ -234,6 +230,8 @@ const clearText = () => {
   text.value = ''
   textChanged.value = false
   originalText.value = ''
+  // 发送文本改变事件通知父组件
+  emit('textChange', '')
   nextTick(() => {
     textareaRef.value?.focus()
   })
@@ -291,16 +289,10 @@ defineExpose({
   flex-direction: column;
 }
 
-.text-input-container.playing {
+.text-input-container:hover {
   background: rgba(255, 255, 255, 0.95);
   border-color: rgba(102, 126, 234, 0.3);
   box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
-}
-
-.text-input-container.generating {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(245, 158, 11, 0.3);
-  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.15);
 }
 
 .input-header {
@@ -389,7 +381,6 @@ defineExpose({
 .upload-area:hover {
   border-color: #667eea;
   background: rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
 }
 
 .upload-icon {
@@ -411,71 +402,48 @@ defineExpose({
   flex-direction: column;
 }
 
-/* 智能编辑提示 */
+/* 简洁编辑按钮 */
 .edit-prompt {
   position: absolute;
-  top: -12px;
+  top: -8px;
   right: 16px;
   z-index: 10;
-  animation: slideInDown 0.3s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.edit-prompt-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
-  color: white;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
+.edit-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  color: #667eea;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-  transition: all 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.edit-prompt-content:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
-  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-}
-
-.edit-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.edit-arrow {
-  font-size: 12px;
-  animation: bounce 2s infinite;
+.edit-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
-@keyframes slideInDown {
+.edit-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes bounce {
-  0%, 20%, 53%, 80%, 100% {
-    transform: translate3d(0,0,0);
-  }
-  40%, 43% {
-    transform: translate3d(0, -3px, 0);
-  }
-  70% {
-    transform: translate3d(0, -2px, 0);
-  }
-  90% {
-    transform: translate3d(0, -1px, 0);
   }
 }
 
@@ -647,7 +615,6 @@ defineExpose({
 }
 
 .generate-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
 }
 
@@ -701,7 +668,6 @@ defineExpose({
 .clear-btn:hover:not(:disabled) {
   background: rgba(107, 114, 128, 0.2);
   color: #374151;
-  transform: translateY(-1px);
 }
 
 .clear-btn:disabled {

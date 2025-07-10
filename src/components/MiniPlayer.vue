@@ -115,8 +115,8 @@ const handlePrimaryAction = () => {
 
 .mini-player.playing {
   background: rgba(255, 255, 255, 0.95);
-  transform: scale(1.02);
-  box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
 }
 
 .mini-player.no-audio {
@@ -171,7 +171,6 @@ const handlePrimaryAction = () => {
 }
 
 .primary-btn:not(:disabled):hover {
-  transform: scale(1.08);
   box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
 }
 

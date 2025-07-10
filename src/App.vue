@@ -418,14 +418,6 @@ html, body {
 
 .player-wrapper {
   flex-shrink: 0;
-  padding: 8px;
-  margin: -8px;
-  border-radius: 28px;
-  transition: all 0.3s ease;
-}
-
-.player-wrapper:hover {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .history-wrapper {

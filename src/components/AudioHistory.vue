@@ -122,7 +122,6 @@ const handleDelete = (itemId) => {
 
 .history-container:hover {
   background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
@@ -345,7 +344,6 @@ const handleDelete = (itemId) => {
 
 .history-item:hover:not(.disabled) {
   background: rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   border-color: rgba(102, 126, 234, 0.2);
 }
@@ -432,7 +430,6 @@ const handleDelete = (itemId) => {
 .delete-btn:hover {
   background: rgba(239, 68, 68, 0.2);
   color: #dc2626;
-  transform: scale(1.05);
 }
 
 .delete-btn:active {
