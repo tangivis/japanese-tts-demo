@@ -2,7 +2,11 @@
   <div class="history-container">
     <div class="history-header">
       <div class="header-content">
-        <div class="header-icon">📚</div>
+        <div class="header-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <span class="header-title">履歴</span>
         <div v-if="history.length > 0" class="history-count">{{ history.length }}</div>
       </div>
@@ -138,7 +142,6 @@ const handleDelete = (itemId) => {
 }
 
 .header-icon {
-  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,6 +149,7 @@ const handleDelete = (itemId) => {
   height: 32px;
   background: rgba(102, 126, 234, 0.1);
   border-radius: 8px;
+  color: #667eea;
 }
 
 .header-title {

@@ -2,7 +2,11 @@
   <div class="text-input-container" :class="{ 'playing': isPlaying, 'generating': loading }">
     <div class="input-header">
       <div class="header-content">
-        <div class="header-icon">✏️</div>
+        <div class="header-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <span class="header-title">テキスト入力</span>
         <div v-if="isPlaying" class="status-badge playing">再生中</div>
         <div v-else-if="loading" class="status-badge generating">生成中</div>
@@ -293,7 +297,6 @@ defineExpose({
 }
 
 .header-icon {
-  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -301,6 +304,7 @@ defineExpose({
   height: 32px;
   background: rgba(102, 126, 234, 0.1);
   border-radius: 8px;
+  color: #667eea;
 }
 
 .header-title {
@@ -439,9 +443,9 @@ defineExpose({
 
 .textarea-wrapper {
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   flex: 1;
   min-height: 0;
 }
@@ -451,23 +455,14 @@ defineExpose({
 }
 
 .textarea-wrapper.playing {
-  /* 播放时样式：禁用所有交互 */
-  border-radius: 4px;
+  /* 播放时样式：允许滚动和选择，禁止编辑 */
+  border-radius: 12px;
   position: relative;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .textarea-wrapper.playing .smart-textarea {
-  /* 确保播放时文本域不可交互 */
-  pointer-events: none;
-  overflow: hidden;
-  user-select: none;
-  -webkit-user-select: none;
-  cursor: default;
+  /* 播放时文本域可读可选不可编辑 */
+  cursor: text;
 }
 
 .smart-textarea {
@@ -475,14 +470,15 @@ defineExpose({
   height: 100%;
   min-height: 200px;
   padding: 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
+  border: 2px solid rgba(156, 163, 175, 0.2);
+  border-radius: 12px;
   font-size: 15px;
   line-height: 1.6;
   color: #1e293b;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
   resize: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.3s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
 }
@@ -490,7 +486,8 @@ defineExpose({
 .smart-textarea:focus {
   outline: none;
   border-color: #667eea;
-  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .smart-textarea:disabled {
@@ -501,17 +498,11 @@ defineExpose({
 }
 
 .smart-textarea[readonly] {
-  /* 播放时只读模式：完全禁用交互 */
-  background: #ffffff;
-  border-color: #667eea;
+  /* 播放时只读模式：可选择可滚动不可编辑 */
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(102, 126, 234, 0.3);
   color: #1e293b;
-  cursor: default;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  overflow: hidden;
+  cursor: text;
 }
 
 .textarea-footer {
