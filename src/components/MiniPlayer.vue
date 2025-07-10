@@ -28,17 +28,6 @@
         </button>
 
         <!-- 编辑按钮（仅在非播放时显示） -->
-        <button
-          v-if="!isPlaying && hasAudio"
-          @click="$emit('startEdit')"
-          class="edit-btn"
-          title="テキストを編集"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
       </div>
 
       <!-- 状态信息 -->
@@ -65,7 +54,7 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['togglePlay', 'stopPlay', 'startEdit'])
+const emit = defineEmits(['togglePlay', 'stopPlay'])
 
 const props = defineProps({
   isPlaying: {
@@ -122,7 +111,6 @@ const handlePrimaryAction = () => {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
-  margin-bottom: 20px;
 }
 
 .mini-player.playing {
@@ -196,31 +184,6 @@ const handlePrimaryAction = () => {
 }
 
 .primary-btn:not(:disabled):active {
-  transform: scale(0.95);
-}
-
-.edit-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(34, 197, 94, 0.1);
-  color: #059669;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.edit-btn:hover {
-  background: rgba(34, 197, 94, 0.2);
-  color: #047857;
-  transform: scale(1.05);
-}
-
-.edit-btn:active {
   transform: scale(0.95);
 }
 

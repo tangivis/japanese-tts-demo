@@ -22,6 +22,7 @@
               ref="textInputRef"
               @text-submit="handleTextSubmit"
               @text-change="handleTextChange"
+              @enable-edit="handleStartEdit"
               :loading="processing"
               :is-playing="isPlaying"
               :has-audio="hasAudio"
@@ -42,7 +43,6 @@
                 :text-changed="textChanged"
                 @toggle-play="handleTogglePlay"
                 @stop-play="handleStopPlay"
-                @start-edit="handleStartEdit"
               />
             </div>
 
@@ -411,12 +411,21 @@ html, body {
 .control-section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   min-height: 0;
+  padding: 8px 0;
 }
 
 .player-wrapper {
   flex-shrink: 0;
+  padding: 8px;
+  margin: -8px;
+  border-radius: 28px;
+  transition: all 0.3s ease;
+}
+
+.player-wrapper:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .history-wrapper {
