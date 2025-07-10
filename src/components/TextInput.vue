@@ -451,9 +451,23 @@ defineExpose({
 }
 
 .textarea-wrapper.playing {
-  /* 播放时样式：保持清晰可读，为未来高亮功能做准备 */
-  border-radius: 12px;
+  /* 播放时样式：禁用所有交互 */
+  border-radius: 4px;
   position: relative;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.textarea-wrapper.playing .smart-textarea {
+  /* 确保播放时文本域不可交互 */
+  pointer-events: none;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
 }
 
 .smart-textarea {
@@ -461,14 +475,14 @@ defineExpose({
   height: 100%;
   min-height: 200px;
   padding: 16px;
-  border: 2px solid rgba(156, 163, 175, 0.3);
-  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
   font-size: 15px;
   line-height: 1.6;
   color: #1e293b;
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   resize: none;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
 }
@@ -476,23 +490,23 @@ defineExpose({
 .smart-textarea:focus {
   outline: none;
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  background: rgba(255, 255, 255, 1);
+  background: #ffffff;
 }
 
 .smart-textarea:disabled {
   opacity: 0.6;
-  background: rgba(249, 250, 251, 1);
+  background: #f9fafb;
   color: #9ca3af;
-  border-color: rgba(156, 163, 175, 0.2);
+  border-color: #e5e7eb;
 }
 
 .smart-textarea[readonly] {
-  /* 播放时只读模式：禁用选择和滚动 */
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(102, 126, 234, 0.4);
+  /* 播放时只读模式：完全禁用交互 */
+  background: #ffffff;
+  border-color: #667eea;
   color: #1e293b;
   cursor: default;
+  pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
