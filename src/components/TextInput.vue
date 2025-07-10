@@ -28,9 +28,14 @@
           style="display: none"
         />
         <div class="upload-area" @click="triggerFileSelect">
-          <div class="upload-icon">📄</div>
+          <div class="upload-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.64 16.2a2 2 0 0 1-2.83-2.83l8.49-8.49" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
           <div class="upload-text">
             <span>ファイルを選択</span>
+            <small>TXT, MD対応</small>
           </div>
         </div>
       </div>
@@ -47,7 +52,7 @@
           </button>
         </div>
         
-        <div class="textarea-wrapper" :class="{ 'disabled': (!canEdit && hasAudio), 'playing': isPlaying }">
+        <div class="textarea-wrapper" :class="{ 'disabled': (!canEdit && hasAudio && !isPlaying), 'playing': isPlaying }">
           <textarea
             ref="textareaRef"
             v-model="text"
@@ -373,14 +378,29 @@ defineExpose({
 }
 
 .upload-icon {
-  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667eea;
   opacity: 0.8;
+}
+
+.upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .upload-text span {
   color: #667eea;
   font-weight: 500;
   font-size: 14px;
+}
+
+.upload-text small {
+  color: rgba(102, 126, 234, 0.7);
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .textarea-section {
@@ -451,7 +471,7 @@ defineExpose({
 }
 
 .textarea-wrapper.disabled {
-  pointer-events: none;
+  opacity: 0.6;
 }
 
 .textarea-wrapper.playing {
