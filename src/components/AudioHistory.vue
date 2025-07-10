@@ -3,7 +3,7 @@
     <div class="history-header">
       <div class="header-content">
         <div class="header-icon">📚</div>
-        <span class="header-title">再生履歴</span>
+        <span class="header-title">テキスト履歴</span>
         <div class="history-count">{{ history.length }}</div>
       </div>
     </div>
@@ -286,11 +286,6 @@ const formatTime = (timestamp) => {
     max-height: 280px;
   }
   
-  .play-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
   .delete-btn {
     width: 28px;
     height: 28px;
@@ -328,11 +323,6 @@ const formatTime = (timestamp) => {
   
   .item-actions {
     gap: 6px;
-  }
-  
-  .play-btn {
-    width: 32px;
-    height: 32px;
   }
   
   .delete-btn {
