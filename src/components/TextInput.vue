@@ -65,15 +65,15 @@
         <!-- 字符计数和提示 -->
         <div class="textarea-footer" v-show="!isPlaying && canEdit">
           <div class="char-count" :class="{ 'warning': text.length > 1000 }">
-            {{ text.length }} / 2000文字
+            {{ text.length }} / 2000字
           </div>
           <div class="input-hints">
             <span v-if="text.length === 0" class="hint">日本語のテキストを入力してください</span>
             <span v-else-if="text.length < 10" class="hint">もう少し長いテキストをお試しください</span>
             <span v-else-if="text.length > 1000" class="warning-hint">長いテキストは生成に時間がかかります</span>
             <span v-else-if="hasAudio && textChanged" class="changed-hint">テキストが変更されました。新しい音声を生成してください。</span>
-            <span v-else-if="hasAudio && !textChanged" class="synced-hint">現在の音声と同期しています</span>
-            <span v-else class="ready-hint">音声生成の準備完了</span>
+            <span v-else-if="hasAudio && !textChanged" class="synced-hint">音声と同期済み</span>
+            <span v-else class="ready-hint">音声生成できます</span>
           </div>
         </div>
       </div>

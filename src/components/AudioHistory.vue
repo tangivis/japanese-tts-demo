@@ -3,7 +3,7 @@
     <div class="history-header">
       <div class="header-content">
         <div class="header-icon">📚</div>
-        <span class="header-title">テキスト履歴</span>
+        <span class="header-title">履歴</span>
         <div class="history-count">{{ history.length }}</div>
       </div>
     </div>
@@ -18,7 +18,7 @@
         <div class="item-main" @click="!isPlaying && handleItemClick(item)">
           <div class="item-text">{{ item.text }}</div>
           <div class="item-meta">
-            <span class="item-hint">{{ isPlaying ? '再生中は使用できません' : 'クリックして使用' }}</span>
+            <span class="item-hint">{{ isPlaying ? '再生中は使えません' : 'クリックで使用' }}</span>
           </div>
         </div>
         

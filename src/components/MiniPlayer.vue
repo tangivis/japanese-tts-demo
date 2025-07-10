@@ -44,11 +44,11 @@
       <!-- 状态信息 -->
       <div class="status-info">
         <div class="status-text">
-          <span v-if="!hasAudio" class="hint-text">音声を生成してください</span>
-          <span v-else-if="textChanged" class="changed-text">テキストが変更されました</span>
-          <span v-else-if="isPlaying" class="playing-text">再生中（クリックで一時停止）</span>
-          <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中（クリックで再開）</span>
-          <span v-else class="ready-text">再生準備完了</span>
+          <span v-if="!hasAudio" class="hint-text">音声を作ってください</span>
+          <span v-else-if="textChanged" class="changed-text">テキストが変わりました</span>
+          <span v-else-if="isPlaying" class="playing-text">再生中</span>
+          <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中</span>
+          <span v-else class="ready-text">再生できます</span>
         </div>
         
         <!-- 简化的进度指示器 -->
@@ -91,11 +91,11 @@ const props = defineProps({
 })
 
 const getPrimaryButtonTitle = () => {
-  if (!props.hasAudio) return '音声を生成してください'
-  if (props.textChanged) return 'テキストが変更されました。新しい音声を生成してください。'
-  if (props.isPlaying) return 'クリックで一時停止'
-  if (props.isPaused) return 'クリックで再開'
-  return 'クリックで再生'
+  if (!props.hasAudio) return '音声を作ってください'
+  if (props.textChanged) return 'テキストが変わりました。新しい音声を作ってください。'
+  if (props.isPlaying) return '一時停止'
+  if (props.isPaused) return '再開'
+  return '再生'
 }
 
 const handlePrimaryAction = () => {

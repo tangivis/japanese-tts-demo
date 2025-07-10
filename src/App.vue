@@ -6,16 +6,16 @@
         <div class="header-content">
           <h1 class="title">
             <el-icon class="title-icon"><Microphone /></el-icon>
-            日本語 TTS
+            Web Speech API デモ
           </h1>
-          <p class="subtitle">テキストを自然な音声に変換</p>
+          <p class="subtitle">テキストを音声に変換</p>
         </div>
       </header>
 
       <main class="main-content">
         <div class="content-wrapper">
           <!-- 文本输入区域 -->
-          <TextInput 
+          <TextInput
             ref="textInputRef"
             @text-submit="handleTextSubmit"
             @text-change="handleTextChange"
@@ -25,10 +25,10 @@
             :can-edit="canEdit"
             :text-changed="textChanged"
           />
-          
+
           <!-- 简化的播放控制器 -->
           <div v-if="hasAudio" class="player-container">
-            <MiniPlayer 
+            <MiniPlayer
               :is-playing="isPlaying"
               :has-audio="hasAudio"
               :can-pause="canPause"
@@ -39,7 +39,7 @@
               @start-edit="handleStartEdit"
             />
           </div>
-          
+
           <!-- 历史记录 -->
           <AudioHistory 
             v-if="audioHistory.length > 0"
@@ -108,7 +108,7 @@ const handleTextSubmit = async (text) => {
     ElMessage.success('音声生成完了')
   } catch (error) {
     console.error('TTS Error:', error)
-    ElMessage.error('音声生成に失敗しました')
+    ElMessage.error('音声生成ができませんでした')
   } finally {
     processing.value = false
   }
@@ -204,7 +204,7 @@ const handleSelectItem = async (item) => {
   await nextTick()
   textInputRef.value?.focusTextarea()
   
-  ElMessage.info('テキストを入力框に設定しました')
+  ElMessage.info('テキストを入力欄に設定しました')
 }
 
 const startTimeTracking = () => {
