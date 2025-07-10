@@ -79,6 +79,8 @@
             <span v-if="text.length === 0" class="hint">日本語のテキストを入力してください</span>
             <span v-else-if="text.length < 10" class="hint">もう少し長いテキストをお試しください</span>
             <span v-else-if="text.length > 1000" class="warning-hint">長いテキストは生成に時間がかかります</span>
+            <span v-else-if="hasAudio && textChanged" class="changed-hint">テキストが変更されました。新しい音声を生成してください。</span>
+            <span v-else-if="hasAudio && !textChanged" class="synced-hint">現在の音声と同期しています</span>
             <span v-else class="ready-hint">音声生成の準備完了</span>
           </div>
         </div>
@@ -140,6 +142,10 @@ const props = defineProps({
   canEdit: {
     type: Boolean,
     default: true
+  },
+  textChanged: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -151,7 +157,10 @@ const fileInput = ref(null)
 const textareaRef = ref(null)
 
 const canGenerate = computed(() => {
-  return text.value.trim().length >= 1 && text.value.length <= 2000 && !props.loading
+  return text.value.trim().length >= 1 && 
+         text.value.length <= 2000 && 
+         !props.loading && 
+         (props.textChanged || !props.hasAudio)
 })
 
 const getPlaceholder = () => {
@@ -163,6 +172,7 @@ const getPlaceholder = () => {
 
 const getButtonText = () => {
   if (props.loading) return '生成中...'
+  if (props.hasAudio && !props.textChanged) return '再生成'
   return '音声を生成'
 }
 
@@ -505,6 +515,16 @@ defineExpose({
 }
 
 .ready-hint {
+  color: #059669;
+  font-weight: 500;
+}
+
+.changed-hint {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.synced-hint {
   color: #059669;
   font-weight: 500;
 }

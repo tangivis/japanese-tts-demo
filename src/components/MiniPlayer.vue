@@ -5,16 +5,22 @@
       <div class="player-controls">
         <!-- 主要播放/暂停按钮 -->
         <button
-          :disabled="!hasAudio"
+          :disabled="!hasAudio || textChanged"
           @click="handlePrimaryAction"
           class="primary-btn"
-          :class="{ 'playing': isPlaying }"
+          :class="{ 'playing': isPlaying, 'disabled-state': textChanged }"
           :title="getPrimaryButtonTitle()"
         >
           <div class="primary-icon">
             <div v-if="isPlaying" class="pause-bars">
               <span></span>
               <span></span>
+            </div>
+            <div v-else-if="textChanged" class="sync-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
             <div v-else class="play-triangle"></div>
           </div>
@@ -39,6 +45,7 @@
       <div class="status-info">
         <div class="status-text">
           <span v-if="!hasAudio" class="hint-text">音声を生成してください</span>
+          <span v-else-if="textChanged" class="changed-text">テキストが変更されました</span>
           <span v-else-if="isPlaying" class="playing-text">再生中（クリックで一時停止）</span>
           <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中（クリックで再開）</span>
           <span v-else class="ready-text">再生準備完了</span>
@@ -76,17 +83,26 @@ const props = defineProps({
   isPaused: {
     type: Boolean,
     default: false
+  },
+  textChanged: {
+    type: Boolean,
+    default: false
   }
 })
 
 const getPrimaryButtonTitle = () => {
   if (!props.hasAudio) return '音声を生成してください'
+  if (props.textChanged) return 'テキストが変更されました。新しい音声を生成してください。'
   if (props.isPlaying) return 'クリックで一時停止'
   if (props.isPaused) return 'クリックで再開'
   return 'クリックで再生'
 }
 
 const handlePrimaryAction = () => {
+  if (props.textChanged || !props.hasAudio) {
+    return
+  }
+  
   if (props.isPlaying) {
     emit('stopPlay')
   } else {
@@ -159,6 +175,12 @@ const handlePrimaryAction = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.primary-btn.disabled-state {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  cursor: not-allowed;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+}
+
 .primary-btn:not(:disabled):hover {
   transform: scale(1.08);
   box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
@@ -227,6 +249,13 @@ const handlePrimaryAction = () => {
   border-radius: 2px;
 }
 
+.sync-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
 .ripple-effect {
   position: absolute;
   top: 50%;
@@ -282,6 +311,11 @@ const handlePrimaryAction = () => {
 .paused-text {
   color: #f59e0b;
   animation: fade 2s infinite;
+}
+
+.changed-text {
+  color: #d97706;
+  animation: pulse 2s infinite;
 }
 
 @keyframes fade {

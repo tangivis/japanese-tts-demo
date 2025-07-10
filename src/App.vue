@@ -18,11 +18,12 @@
           <TextInput 
             ref="textInputRef"
             @text-submit="handleTextSubmit"
-            @stop-playing="handleStopToEdit"
+            @text-change="handleTextChange"
             :loading="processing"
             :is-playing="isPlaying"
             :has-audio="hasAudio"
             :can-edit="canEdit"
+            :text-changed="textChanged"
           />
           
           <!-- 简化的播放控制器 -->
@@ -32,6 +33,7 @@
               :has-audio="hasAudio"
               :can-pause="canPause"
               :is-paused="isPaused"
+              :text-changed="textChanged"
               @toggle-play="handleTogglePlay"
               @stop-play="handleStopPlay"
               @start-edit="handleStartEdit"
@@ -42,7 +44,6 @@
           <AudioHistory 
             v-if="audioHistory.length > 0"
             :history="audioHistory"
-            :current-item-id="currentPlayingId"
             @select-item="handleSelectItem"
             @delete="handleDeleteHistory"
           />
@@ -74,6 +75,8 @@ const progress = ref(0)
 const audioHistory = ref([])
 const textInputRef = ref(null)
 const canEdit = ref(true)
+const textChanged = ref(false)
+const lastGeneratedText = ref('')
 const currentPlayingId = ref(null)
 const currentPlayingText = ref('')
 
@@ -92,12 +95,12 @@ const handleTextSubmit = async (text) => {
     const audioData = await generateAudio(text)
     duration.value = audioData.duration || 0
     hasAudio.value = true
-    canEdit.value = false // 生成后不可编辑
+    canEdit.value = false
+    textChanged.value = false
+    lastGeneratedText.value = text
     
-    // 添加到历史记录
     addToHistory(text)
     
-    // 自动开始播放
     await nextTick()
     startPlaying(text)
     
@@ -150,12 +153,10 @@ const startPlaying = (text) => {
 
 const handleTogglePlay = () => {
   if (isPlaying.value) {
-    // Web Speech API 不支持真正的暂停，所以停止播放
     handleStopPlay()
   } else {
-    // 从输入框获取当前文字并播放（从头开始）
     const currentText = textInputRef.value?.getText()?.trim()
-    if (currentText) {
+    if (currentText && !textChanged.value && hasAudio.value) {
       currentPlayingText.value = currentText
       startPlaying(currentText)
     }
@@ -180,25 +181,27 @@ const handleStartEdit = () => {
   })
 }
 
+const handleTextChange = (newText) => {
+  if (hasAudio.value && newText !== lastGeneratedText.value) {
+    textChanged.value = true
+  } else {
+    textChanged.value = false
+  }
+}
+
 const handleSelectItem = async (item) => {
-  // 设置文字到输入框
   if (textInputRef.value) {
     textInputRef.value.setText(item.fullText)
-    textInputRef.value.resetChangeState()
+    canEdit.value = true
+    hasAudio.value = false
+    textChanged.value = false
+    lastGeneratedText.value = ''
   }
   
-  // 等待下一个tick确保文字已设置
   await nextTick()
+  textInputRef.value?.focusTextarea()
   
-  // 设置音频状态并直接播放
-  duration.value = estimateDuration(item.fullText)
-  hasAudio.value = true
-  currentPlayingId.value = item.id
-  currentPlayingText.value = item.fullText
-  
-  startPlaying(item.fullText)
-  
-  ElMessage.success('音声再生開始')
+  ElMessage.info('テキストを输入框に設定しました')
 }
 
 const startTimeTracking = () => {

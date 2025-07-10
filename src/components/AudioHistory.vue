@@ -13,33 +13,16 @@
         v-for="item in history" 
         :key="item.id"
         class="history-item"
-        :class="{ 'current': item.id === currentItemId }"
       >
         <div class="item-main" @click="handleItemClick(item)">
           <div class="item-text">{{ item.text }}</div>
           <div class="item-meta">
             <span class="item-time">{{ formatTime(item.timestamp) }}</span>
+            <span class="item-hint">クリックして使用</span>
           </div>
         </div>
         
         <div class="item-actions">
-          <button 
-            class="play-btn"
-            @click="handleItemClick(item)"
-            :class="{ 'playing': item.id === currentItemId }"
-            :title="item.id === currentItemId ? '再生中' : '再生'"
-          >
-            <div v-if="item.id === currentItemId" class="status-indicator playing">
-              <div class="pulse-ring"></div>
-              <div class="pulse-dot"></div>
-            </div>
-            <div v-else class="status-indicator idle">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M8 5v14l11-7z" fill="currentColor"/>
-              </svg>
-            </div>
-          </button>
-          
           <button 
             class="delete-btn"
             @click="handleDelete(item.id)"
@@ -62,10 +45,6 @@ defineProps({
   history: {
     type: Array,
     default: () => []
-  },
-  currentItemId: {
-    type: String,
-    default: null
   }
 })
 
@@ -182,12 +161,6 @@ const formatTime = (timestamp) => {
   border-color: rgba(102, 126, 234, 0.2);
 }
 
-.history-item.current {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border-color: rgba(102, 126, 234, 0.3);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
-}
-
 .item-main {
   flex: 1;
   min-width: 0;
@@ -225,79 +198,22 @@ const formatTime = (timestamp) => {
   font-weight: 400;
 }
 
+.item-hint {
+  color: #667eea;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.history-item:hover .item-hint {
+  opacity: 1;
+}
+
 .item-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-}
-
-.play-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-.play-btn:hover {
-  background: rgba(102, 126, 234, 0.2);
-  color: #5a67d8;
-  transform: scale(1.05);
-}
-
-.play-btn.playing {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-  border-color: rgba(102, 126, 234, 0.4);
-}
-
-.status-indicator.idle {
-  color: inherit;
-  transition: all 0.3s ease;
-}
-
-.status-indicator.playing {
-  position: relative;
-  width: 20px;
-  height: 20px;
-}
-
-.pulse-ring {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 2px solid #667eea;
-  border-radius: 50%;
-  animation: pulse-ring 1.5s infinite;
-}
-
-.pulse-dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  background: #667eea;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.4);
-    opacity: 0;
-  }
 }
 
 .delete-btn {
