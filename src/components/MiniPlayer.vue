@@ -1,33 +1,32 @@
 <template>
   <div class="mini-player" :class="{ 'playing': isPlaying, 'no-audio': !hasAudio }">
     <div class="player-content">
-      <!-- 优化后的播放控制 -->
+      <!-- 优化的播放控制 -->
       <div class="player-controls">
-        <!-- 主要播放控制按钮 -->
+        <!-- 主要播放/暂停按钮 -->
         <button
           :disabled="!hasAudio"
           @click="handlePrimaryAction"
           class="primary-btn"
-          :class="{ 'playing': isPlaying, 'stop-mode': isPlaying }"
+          :class="{ 'playing': isPlaying }"
           :title="getPrimaryButtonTitle()"
         >
           <div class="primary-icon">
-            <div v-if="isPlaying" class="stop-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="6" width="12" height="12" fill="currentColor" rx="2"/>
-              </svg>
+            <div v-if="isPlaying" class="pause-bars">
+              <span></span>
+              <span></span>
             </div>
             <div v-else class="play-triangle"></div>
           </div>
           <div v-if="isPlaying" class="ripple-effect"></div>
         </button>
 
-        <!-- 编辑按钮（仅在播放时显示） -->
+        <!-- 编辑按钮（仅在非播放时显示） -->
         <button
-          v-if="isPlaying"
-          @click="$emit('stopToEdit')"
+          v-if="!isPlaying && hasAudio"
+          @click="$emit('startEdit')"
           class="edit-btn"
-          title="停止して編集"
+          title="テキストを編集"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -40,7 +39,7 @@
       <div class="status-info">
         <div class="status-text">
           <span v-if="!hasAudio" class="hint-text">音声を生成してください</span>
-          <span v-else-if="isPlaying" class="playing-text">再生中（クリックで停止）</span>
+          <span v-else-if="isPlaying" class="playing-text">再生中（クリックで一時停止）</span>
           <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中（クリックで再開）</span>
           <span v-else class="ready-text">再生準備完了</span>
         </div>
@@ -59,7 +58,7 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['togglePlay', 'stopPlay', 'stopToEdit'])
+const emit = defineEmits(['togglePlay', 'stopPlay', 'startEdit'])
 
 const props = defineProps({
   isPlaying: {
@@ -82,7 +81,7 @@ const props = defineProps({
 
 const getPrimaryButtonTitle = () => {
   if (!props.hasAudio) return '音声を生成してください'
-  if (props.isPlaying) return 'クリックで停止'
+  if (props.isPlaying) return 'クリックで一時停止'
   if (props.isPaused) return 'クリックで再開'
   return 'クリックで再生'
 }
@@ -162,6 +161,7 @@ const handlePrimaryAction = () => {
 
 .primary-btn:not(:disabled):hover {
   transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
 }
 
 .primary-btn:not(:disabled):hover:not(.stop-mode) {
@@ -215,11 +215,16 @@ const handlePrimaryAction = () => {
   margin-left: 3px;
 }
 
-.stop-icon {
+.pause-bars {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+  gap: 4px;
+}
+
+.pause-bars span {
+  width: 4px;
+  height: 16px;
+  background: white;
+  border-radius: 2px;
 }
 
 .ripple-effect {
@@ -352,9 +357,9 @@ const handlePrimaryAction = () => {
     border-bottom: 6px solid transparent;
   }
   
-  .stop-icon svg {
-    width: 16px;
-    height: 16px;
+  .pause-bars span {
+    width: 3px;
+    height: 14px;
   }
   
   .status-text {

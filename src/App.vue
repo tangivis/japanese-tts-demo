@@ -22,6 +22,7 @@
             :loading="processing"
             :is-playing="isPlaying"
             :has-audio="hasAudio"
+            :can-edit="canEdit"
           />
           
           <!-- 简化的播放控制器 -->
@@ -33,7 +34,7 @@
               :is-paused="isPaused"
               @toggle-play="handleTogglePlay"
               @stop-play="handleStopPlay"
-              @stop-to-edit="handleStopToEdit"
+              @start-edit="handleStartEdit"
             />
           </div>
           
@@ -72,6 +73,7 @@ const duration = ref(0)
 const progress = ref(0)
 const audioHistory = ref([])
 const textInputRef = ref(null)
+const canEdit = ref(true)
 const currentPlayingId = ref(null)
 const currentPlayingText = ref('')
 
@@ -90,6 +92,7 @@ const handleTextSubmit = async (text) => {
     const audioData = await generateAudio(text)
     duration.value = audioData.duration || 0
     hasAudio.value = true
+    canEdit.value = false // 生成后不可编辑
     
     // 添加到历史记录
     addToHistory(text)
@@ -170,9 +173,11 @@ const handleStopPlay = () => {
   currentPlayingId.value = null
 }
 
-const handleStopToEdit = () => {
-  handleStopPlay()
-  // 可以在这里添加额外的编辑相关逻辑
+const handleStartEdit = () => {
+  canEdit.value = true
+  nextTick(() => {
+    textInputRef.value?.focusTextarea()
+  })
 }
 
 const handleSelectItem = async (item) => {

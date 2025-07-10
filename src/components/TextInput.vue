@@ -33,11 +33,11 @@
 
       <!-- 智能文本输入区域 -->
       <div class="textarea-section">
-        <div class="textarea-wrapper" :class="{ 'disabled': isPlaying }">
+        <div class="textarea-wrapper" :class="{ 'disabled': isPlaying || (!canEdit && hasAudio) }">
           <textarea
             ref="textareaRef"
             v-model="text"
-            :disabled="isPlaying"
+            :disabled="isPlaying || (!canEdit && hasAudio)"
             :placeholder="getPlaceholder()"
             class="smart-textarea"
             @input="onTextChange"
@@ -46,10 +46,10 @@
             rows="6"
           ></textarea>
           
-          <!-- 播放时的覆盖层 -->
-          <div v-if="isPlaying" class="playing-overlay">
-            <div class="playing-content">
-              <div class="playing-icon">
+          <!-- 播放或锁定时的覆盖层 -->
+          <div v-if="isPlaying || (!canEdit && hasAudio)" class="locked-overlay">
+            <div class="locked-content">
+              <div v-if="isPlaying" class="playing-icon">
                 <div class="sound-waves">
                   <span></span>
                   <span></span>
@@ -57,13 +57,21 @@
                   <span></span>
                 </div>
               </div>
-              <p class="playing-message">音声再生中...</p>
+              <div v-else class="locked-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <p class="overlay-message">
+                {{ isPlaying ? '音声再生中...' : 'テキストがロックされています' }}
+              </p>
             </div>
           </div>
         </div>
 
         <!-- 字符计数和提示 -->
-        <div class="textarea-footer" v-show="!isPlaying">
+        <div class="textarea-footer" v-show="!isPlaying && canEdit">
           <div class="char-count" :class="{ 'warning': text.length > 1000 }">
             {{ text.length }} / 2000文字
           </div>
@@ -77,7 +85,7 @@
       </div>
 
       <!-- 智能操作按钮 -->
-      <div class="action-section" v-show="!isPlaying">
+      <div class="action-section" v-show="!isPlaying && canEdit">
         <button
           :disabled="!canGenerate"
           class="generate-btn"
@@ -128,6 +136,10 @@ const props = defineProps({
   hasAudio: {
     type: Boolean,
     default: false
+  },
+  canEdit: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -145,6 +157,7 @@ const canGenerate = computed(() => {
 const getPlaceholder = () => {
   if (props.isPlaying) return ''
   if (props.loading) return '音声を生成しています...'
+  if (!props.canEdit && props.hasAudio) return 'テキストがロックされています'
   return 'ここに日本語のテキストを入力してください...'
 }
 
@@ -220,12 +233,19 @@ const resetChangeState = () => {
   textChanged.value = false
 }
 
+const focusTextarea = () => {
+  nextTick(() => {
+    textareaRef.value?.focus()
+  })
+}
+
 // 暴露方法给父组件
 defineExpose({
   clearText,
   setText,
   getText,
-  resetChangeState
+  resetChangeState,
+  focusTextarea
 })
 </script>
 
@@ -395,7 +415,7 @@ defineExpose({
   color: #94a3b8;
 }
 
-.playing-overlay {
+.locked-overlay {
   position: absolute;
   top: 2px;
   left: 2px;
@@ -409,7 +429,7 @@ defineExpose({
   border-radius: 10px;
 }
 
-.playing-content {
+.locked-content {
   text-align: center;
   padding: 20px;
 }
@@ -442,10 +462,15 @@ defineExpose({
   50% { height: 32px; opacity: 1; }
 }
 
-.playing-message {
+.locked-icon {
+  margin-bottom: 16px;
+  color: #64748b;
+}
+
+.overlay-message {
   color: #667eea;
   font-weight: 500;
-  margin: 0 0 16px 0;
+  margin: 0;
   font-size: 16px;
 }
 
