@@ -58,9 +58,6 @@
                 </div>
               </div>
               <p class="playing-message">音声再生中...</p>
-              <button @click="$emit('stop-playing')" class="stop-btn">
-                停止して編集
-              </button>
             </div>
           </div>
         </div>
@@ -450,23 +447,6 @@ defineExpose({
   font-weight: 500;
   margin: 0 0 16px 0;
   font-size: 16px;
-}
-
-.stop-btn {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #dc2626;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.stop-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  transform: scale(1.02);
 }
 
 .textarea-footer {

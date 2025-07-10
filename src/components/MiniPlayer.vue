@@ -20,7 +20,7 @@
           <div v-if="isPlaying" class="ripple-effect"></div>
         </button>
 
-        <!-- 停止按钮（仅在播放时显示） -->
+        <!-- 停止按钮和编辑按钮（仅在播放时显示） -->
         <button
           v-if="isPlaying"
           @click="$emit('stopPlay')"
@@ -31,6 +31,18 @@
             <rect x="6" y="6" width="12" height="12" fill="currentColor" rx="2"/>
           </svg>
         </button>
+        
+        <button
+          v-if="isPlaying"
+          @click="$emit('stopToEdit')"
+          class="edit-btn"
+          title="停止して編集"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
 
       <!-- 状态信息 -->
@@ -38,7 +50,7 @@
         <div class="status-text">
           <span v-if="!hasAudio" class="hint-text">音声を生成してください</span>
           <span v-else-if="isPlaying && canPause" class="playing-text">再生中（クリックで一時停止）</span>
-          <span v-else-if="isPlaying && !canPause" class="playing-text">再生中（停止ボタンで停止）</span>
+          <span v-else-if="isPlaying && !canPause" class="playing-text">再生中</span>
           <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中（クリックで再開）</span>
           <span v-else class="ready-text">再生準備完了</span>
         </div>
@@ -57,7 +69,7 @@
 </template>
 
 <script setup>
-defineEmits(['togglePlay', 'stopPlay'])
+defineEmits(['togglePlay', 'stopPlay', 'stopToEdit'])
 
 const props = defineProps({
   isPlaying: {
@@ -178,6 +190,31 @@ const getPlayButtonTitle = () => {
 }
 
 .stop-btn:active {
+  transform: scale(0.95);
+}
+
+.edit-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  color: #059669;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.edit-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  color: #047857;
+  transform: scale(1.05);
+}
+
+.edit-btn:active {
   transform: scale(0.95);
 }
 

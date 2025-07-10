@@ -33,6 +33,7 @@
               :is-paused="isPaused"
               @toggle-play="handleTogglePlay"
               @stop-play="handleStopPlay"
+              @stop-to-edit="handleStopFromInput"
             />
           </div>
           
