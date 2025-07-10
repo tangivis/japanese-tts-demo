@@ -91,8 +91,13 @@ defineProps({
 
 .history-badge {
   margin-left: auto;
+}
+
+.history-badge :deep(.el-badge__content) {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
+  color: white;
+  font-weight: 600;
 }
 
 .history-content {
