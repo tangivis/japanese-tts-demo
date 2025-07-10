@@ -242,8 +242,15 @@ const formatTime = (seconds) => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-watch(() => props.audioData, () => {
+watch(() => props.audioData, (newData) => {
   createAudioPlayer()
+  
+  // 如果是新的Web Speech API数据，自动播放
+  if (newData?.isWebSpeech) {
+    setTimeout(() => {
+      togglePlay()
+    }, 100)
+  }
 }, { immediate: true })
 
 onUnmounted(() => {

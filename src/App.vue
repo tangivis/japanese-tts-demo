@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Microphone } from '@element-plus/icons-vue'
 import TextInput from './components/TextInput.vue'
@@ -86,8 +86,7 @@ const addToHistory = (text, audioData) => {
     id: Date.now().toString(),
     text: text.length > 50 ? text.substring(0, 50) + '...' : text,
     fullText: text,
-    timestamp: new Date().toLocaleString('ja-JP'),
-    audioData
+    timestamp: new Date().toLocaleString('ja-JP')
   }
   
   audioHistory.value.unshift(historyItem)
@@ -98,9 +97,25 @@ const addToHistory = (text, audioData) => {
   }
 }
 
-const handleReplay = (item) => {
-  currentAudio.value = item.audioData
-  hasAudio.value = true
+const handleReplay = async (item) => {
+  processing.value = true
+  
+  try {
+    // 重新生成音频
+    const audioData = await generateAudio(item.fullText)
+    currentAudio.value = audioData
+    hasAudio.value = true
+    
+    // 等待组件更新后自动播放
+    await nextTick()
+    
+    ElMessage.success('音声再生開始')
+  } catch (error) {
+    console.error('Replay Error:', error)
+    ElMessage.error('音声再生に失敗しました')
+  } finally {
+    processing.value = false
+  }
 }
 
 const handleDeleteHistory = (id) => {
