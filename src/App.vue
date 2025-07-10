@@ -411,9 +411,8 @@ html, body {
 .control-section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   min-height: 0;
-  padding: 8px 0;
 }
 
 .player-wrapper {

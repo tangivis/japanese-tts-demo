@@ -14,7 +14,7 @@
       <div 
         class="upload-section"
         :class="{ 'compact': text.trim() }"
-        v-show="!isPlaying"
+        v-show="!isPlaying && canEdit"
       >
         <input
           ref="fileInput"
@@ -33,7 +33,7 @@
 
       <!-- 智能文本输入区域 -->
       <div class="textarea-section">
-        <!-- 智能编辑状态提示 -->
+        <!-- 简洁编辑按钮 -->
         <div v-if="hasAudio && !canEdit && !isPlaying" class="edit-prompt">
           <button class="edit-btn" @click="enableEdit" title="テキストを編集">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -43,7 +43,7 @@
           </button>
         </div>
         
-        <div class="textarea-wrapper" :class="{ 'disabled': isPlaying || (!canEdit && hasAudio) }">
+        <div class="textarea-wrapper" :class="{ 'disabled': isPlaying || (!canEdit && hasAudio), 'playing': isPlaying }">
           <textarea
             ref="textareaRef"
             v-model="text"
@@ -55,21 +55,6 @@
             @blur="onBlur"
             rows="6"
           ></textarea>
-          
-          <!-- 播放时的覆盖层 -->
-          <div v-if="isPlaying" class="playing-overlay">
-            <div class="playing-content">
-              <div class="playing-icon">
-                <div class="sound-waves">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-              <p class="overlay-message">音声再生中...</p>
-            </div>
-          </div>
         </div>
 
         <!-- 字符计数和提示 -->
@@ -460,6 +445,26 @@ defineExpose({
   pointer-events: none;
 }
 
+.textarea-wrapper.playing {
+  opacity: 0.6;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 12px;
+  position: relative;
+}
+
+.textarea-wrapper.playing::after {
+  content: '音声再生中...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .smart-textarea {
   width: 100%;
   height: 100%;
@@ -489,60 +494,6 @@ defineExpose({
   opacity: 0.5;
   background: rgba(248, 250, 252, 0.5);
   color: #94a3b8;
-}
-
-.playing-overlay {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-}
-
-.playing-content {
-  text-align: center;
-  padding: 20px;
-}
-
-.playing-icon {
-  margin-bottom: 16px;
-}
-
-.sound-waves {
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  gap: 3px;
-  height: 40px;
-}
-
-.sound-waves span {
-  width: 4px;
-  background: #667eea;
-  border-radius: 2px;
-  animation: soundWave 1.5s infinite;
-}
-
-.sound-waves span:nth-child(2) { animation-delay: 0.1s; }
-.sound-waves span:nth-child(3) { animation-delay: 0.2s; }
-.sound-waves span:nth-child(4) { animation-delay: 0.3s; }
-
-@keyframes soundWave {
-  0%, 100% { height: 8px; opacity: 0.4; }
-  50% { height: 32px; opacity: 1; }
-}
-
-.overlay-message {
-  color: #667eea;
-  font-weight: 500;
-  margin: 0;
-  font-size: 16px;
 }
 
 .textarea-footer {
