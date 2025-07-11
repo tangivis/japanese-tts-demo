@@ -29,7 +29,7 @@
             <li>フロントエンド: Vue.js 3 + Composition API</li>
             <li>TTS: Web Speech API</li>
             <li>UI: Element Plus</li>
-            <li>純粋なフロントエンドアプリ（バックエンドなし）</li>
+            <li>フロントエンドアプリ（バックエンドなし）</li>
             <li>デプロイ: Cloudflare Pages</li>
           </ul>
         </div>
@@ -132,7 +132,6 @@ onUnmounted(() => {
 }
 
 .dropdown-trigger.is-active {
-  transform: rotate(180deg);
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
