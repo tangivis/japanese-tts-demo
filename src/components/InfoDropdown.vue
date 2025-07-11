@@ -4,30 +4,33 @@
       @click="toggleDropdown" 
       class="dropdown-trigger"
       :class="{ 'is-active': isOpen }"
+      title="DEMO説明"
     >
       <el-icon><InfoFilled /></el-icon>
+      <span class="button-text">DEMO説明</span>
     </button>
     
     <transition name="dropdown">
       <div v-if="isOpen" class="dropdown-content">
         <div class="dropdown-section">
-          <h3 class="section-title">🎯 主要功能</h3>
+          <h3 class="section-title">🎯 実装機能</h3>
           <ul class="feature-list">
             <li>日本語TTS音声合成</li>
-            <li>テキスト/ファイル入力</li>
-            <li>リアルタイム再生制御</li>
+            <li>テキスト/ファイル入力対応</li>
+            <li>リアルタイム音声再生</li>
             <li>音声履歴管理</li>
-            <li>オフライン動作</li>
+            <li>簡単操作インターフェース</li>
           </ul>
         </div>
         
         <div class="dropdown-section">
-          <h3 class="section-title">⚡ 技術スタック</h3>
+          <h3 class="section-title">⚡ 使用技術</h3>
           <ul class="tech-list">
-            <li>Vue.js 3 + Composition API</li>
-            <li>Web Speech API</li>
-            <li>Element Plus UI</li>
-            <li>Vite ビルドツール</li>
+            <li>フロントエンド: Vue.js 3 + Composition API</li>
+            <li>TTS: Web Speech API</li>
+            <li>UI: Element Plus</li>
+            <li>純粋なフロントエンドアプリ（バックエンドなし）</li>
+            <li>デプロイ: Cloudflare Pages</li>
           </ul>
         </div>
         
@@ -42,13 +45,21 @@
         </div>
         
         <div class="dropdown-section">
-          <h3 class="section-title">🔧 開発TODO</h3>
+          <h3 class="section-title">⚠️ 現在の制限</h3>
           <ul class="todo-list">
-            <li>PDF/DOCX対応</li>
-            <li>音声速度調整</li>
-            <li>ダークモード</li>
-            <li>プログレスバー</li>
-            <li>音声エクスポート</li>
+            <li>TTS制限: 音声は実時間生成で正確な時間取得不可</li>
+            <li>音声ダウンロード機能なし</li>
+            <li>純粋フロントエンド: 履歴はページ更新で消失</li>
+          </ul>
+        </div>
+        
+        <div class="dropdown-section">
+          <h3 class="section-title">🔧 今後のTODO</h3>
+          <ul class="todo-list">
+            <li>より高品質なTTS API調査</li>
+            <li>バックエンド開発（API呼び出し用）</li>
+            <li>より多くのファイル形式サポート</li>
+            <li>LLMによる職場対話形式変換</li>
           </ul>
         </div>
       </div>
@@ -90,9 +101,10 @@ onUnmounted(() => {
 }
 
 .dropdown-trigger {
-  width: 56px;
+  width: auto;
+  min-width: 56px;
   height: 56px;
-  border-radius: 50%;
+  border-radius: 28px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   color: white;
@@ -101,9 +113,17 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   position: relative;
+}
+
+.button-text {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .dropdown-trigger:hover {
@@ -231,9 +251,15 @@ onUnmounted(() => {
   }
   
   .dropdown-trigger {
-    width: 48px;
+    min-width: 48px;
     height: 48px;
+    border-radius: 24px;
     font-size: 20px;
+    padding: 0 12px;
+  }
+  
+  .button-text {
+    font-size: 11px;
   }
   
   .dropdown-content {
