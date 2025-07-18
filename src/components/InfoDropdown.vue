@@ -1,15 +1,15 @@
 <template>
   <div class="info-dropdown" :class="{ 'is-open': isOpen }">
-    <button 
-      @click="toggleDropdown" 
+    <button
       class="dropdown-trigger"
       :class="{ 'is-active': isOpen }"
       title="DEMO説明"
+      @click="toggleDropdown"
     >
       <el-icon><InfoFilled /></el-icon>
       <span class="button-text">DEMO説明</span>
     </button>
-    
+
     <transition name="dropdown">
       <div v-if="isOpen" class="dropdown-content">
         <div class="dropdown-section">
@@ -22,7 +22,7 @@
             <li>簡単操作インターフェース</li>
           </ul>
         </div>
-        
+
         <div class="dropdown-section">
           <h3 class="section-title">⚡ 使用技術</h3>
           <ul class="tech-list">
@@ -33,7 +33,7 @@
             <li>デプロイ: Cloudflare Pages</li>
           </ul>
         </div>
-        
+
         <div class="dropdown-section">
           <h3 class="section-title">📋 操作手順</h3>
           <ol class="instruction-list">
@@ -43,7 +43,7 @@
             <li>履歴から過去のテキストを再選択可能</li>
           </ol>
         </div>
-        
+
         <div class="dropdown-section">
           <h3 class="section-title">⚠️ 現在の制限</h3>
           <ul class="todo-list">
@@ -52,7 +52,7 @@
             <li>純粋フロントエンド: 履歴はページ更新で消失</li>
           </ul>
         </div>
-        
+
         <div class="dropdown-section">
           <h3 class="section-title">🔧 今後のTODO</h3>
           <ul class="todo-list">
@@ -189,7 +189,7 @@ onUnmounted(() => {
 .feature-list li:before,
 .tech-list li:before,
 .todo-list li:before {
-  content: "•";
+  content: '•';
   color: #667eea;
   position: absolute;
   left: 0;
@@ -248,7 +248,7 @@ onUnmounted(() => {
     bottom: 20px;
     right: 20px;
   }
-  
+
   .dropdown-trigger {
     min-width: 48px;
     height: 48px;
@@ -256,24 +256,24 @@ onUnmounted(() => {
     font-size: 20px;
     padding: 0 12px;
   }
-  
+
   .button-text {
     font-size: 11px;
   }
-  
+
   .dropdown-content {
     width: 280px;
     bottom: 60px;
   }
-  
+
   .dropdown-section {
     padding: 12px 16px;
   }
-  
+
   .section-title {
     font-size: 13px;
   }
-  
+
   .feature-list li,
   .tech-list li,
   .instruction-list li,
@@ -287,7 +287,7 @@ onUnmounted(() => {
     bottom: 16px;
     right: 16px;
   }
-  
+
   .dropdown-content {
     width: 260px;
     right: -40px;

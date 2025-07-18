@@ -1,15 +1,15 @@
 <template>
-  <div class="mini-player" :class="{ 'playing': isPlaying, 'no-audio': !hasAudio }">
+  <div class="mini-player" :class="{ playing: isPlaying, 'no-audio': !hasAudio }">
     <div class="player-content">
       <!-- 优化的播放控制 -->
       <div class="player-controls">
         <!-- 主要播放/暂停按钮 -->
         <button
           :disabled="!hasAudio || textChanged"
-          @click="handlePrimaryAction"
           class="primary-btn"
-          :class="{ 'playing': isPlaying, 'disabled-state': textChanged }"
+          :class="{ playing: isPlaying, 'disabled-state': textChanged }"
           :title="getPrimaryButtonTitle()"
+          @click="handlePrimaryAction"
         >
           <div class="primary-icon">
             <div v-if="isPlaying" class="pause-bars">
@@ -18,8 +18,20 @@
             </div>
             <div v-else-if="textChanged" class="sync-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="M1 4v6h6M23 20v-6h-6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <div v-else class="play-triangle"></div>
@@ -39,10 +51,10 @@
           <span v-else-if="hasAudio && isPaused" class="paused-text">一時停止中</span>
           <span v-else class="ready-text">再生できます</span>
         </div>
-        
+
         <!-- 简化的进度指示器 -->
         <div v-if="hasAudio" class="activity-indicator">
-          <div class="dots" :class="{ 'animating': isPlaying }">
+          <div class="dots" :class="{ animating: isPlaying }">
             <span></span>
             <span></span>
             <span></span>
@@ -59,24 +71,24 @@ const emit = defineEmits(['togglePlay', 'stopPlay'])
 const props = defineProps({
   isPlaying: {
     type: Boolean,
-    default: false
+    default: false,
   },
   hasAudio: {
     type: Boolean,
-    default: false
+    default: false,
   },
   canPause: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isPaused: {
     type: Boolean,
-    default: false
+    default: false,
   },
   textChanged: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const getPrimaryButtonTitle = () => {
@@ -91,7 +103,7 @@ const handlePrimaryAction = () => {
   if (props.textChanged || !props.hasAudio) {
     return
   }
-  
+
   if (props.isPlaying) {
     emit('stopPlay')
   } else {
@@ -282,13 +294,23 @@ const handlePrimaryAction = () => {
 }
 
 @keyframes fade {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .activity-indicator {
@@ -323,7 +345,9 @@ const handlePrimaryAction = () => {
 }
 
 @keyframes dotPulse {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: scale(1);
     opacity: 0.7;
   }
@@ -338,27 +362,27 @@ const handlePrimaryAction = () => {
     padding: 20px;
     border-radius: 16px;
   }
-  
+
   .player-content {
     gap: 16px;
   }
-  
+
   .primary-btn {
     width: 56px;
     height: 56px;
   }
-  
+
   .play-triangle {
     border-left: 10px solid white;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
   }
-  
+
   .pause-bars span {
     width: 3px;
     height: 14px;
   }
-  
+
   .status-text {
     font-size: 14px;
   }

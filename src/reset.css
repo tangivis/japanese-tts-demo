@@ -1,0 +1,23 @@
+/* Global CSS Reset - Remove all browser default margins */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+}

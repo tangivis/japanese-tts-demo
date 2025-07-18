@@ -4,7 +4,13 @@
       <div class="header-content">
         <div class="header-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
         <span class="header-title">履歴</span>
@@ -14,11 +20,11 @@
 
     <!-- 历史记录列表 -->
     <div v-if="history.length > 0" class="history-list">
-      <div 
-        v-for="item in history" 
+      <div
+        v-for="item in history"
         :key="item.id"
         class="history-item"
-        :class="{ 'disabled': isPlaying }"
+        :class="{ disabled: isPlaying }"
       >
         <div class="item-main" @click="!isPlaying && handleItemClick(item)">
           <div class="item-text">{{ item.text }}</div>
@@ -26,15 +32,16 @@
             <span class="item-hint">{{ isPlaying ? '再生中は使えません' : 'クリックで使用' }}</span>
           </div>
         </div>
-        
+
         <div class="item-actions">
-          <button 
-            class="delete-btn"
-            @click="handleDelete(item.id)"
-            title="削除"
-          >
+          <button class="delete-btn" title="削除" @click="handleDelete(item.id)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
           </button>
         </div>
@@ -54,7 +61,7 @@
             <div class="skeleton-button"></div>
           </div>
         </div>
-        
+
         <!-- 拟物历史条目 2 -->
         <div class="skeleton-item skeleton-delay-1">
           <div class="skeleton-content">
@@ -65,7 +72,7 @@
             <div class="skeleton-button"></div>
           </div>
         </div>
-        
+
         <!-- 拟物历史条目 3 -->
         <div class="skeleton-item skeleton-delay-2">
           <div class="skeleton-content">
@@ -76,7 +83,7 @@
             <div class="skeleton-button"></div>
           </div>
         </div>
-        
+
         <!-- 微妙的提示 -->
         <div class="gentle-hint">
           <div class="hint-icon">✨</div>
@@ -93,12 +100,12 @@ const emit = defineEmits(['selectItem', 'delete'])
 defineProps({
   history: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   isPlaying: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const handleItemClick = (item) => {
@@ -210,12 +217,7 @@ const handleDelete = (itemId) => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   animation: shimmer 2s infinite;
 }
 
@@ -274,12 +276,7 @@ const handleDelete = (itemId) => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 2s infinite;
 }
 
@@ -323,7 +320,8 @@ const handleDelete = (itemId) => {
 }
 
 @keyframes twinkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
@@ -464,27 +462,27 @@ const handleDelete = (itemId) => {
   .history-header {
     padding: 16px 20px 12px;
   }
-  
+
   .header-title {
     font-size: 15px;
   }
-  
+
   .history-item {
     padding: 14px;
   }
-  
+
   .item-text {
     font-size: 13px;
   }
-  
+
   .item-meta {
     font-size: 11px;
   }
-  
+
   .history-list {
     max-height: 280px;
   }
-  
+
   .delete-btn {
     width: 28px;
     height: 28px;
@@ -495,35 +493,35 @@ const handleDelete = (itemId) => {
   .history-container {
     border-radius: 16px;
   }
-  
+
   .history-header {
     padding: 14px 16px 10px;
   }
-  
+
   .header-icon {
     width: 28px;
     height: 28px;
     font-size: 16px;
   }
-  
+
   .header-title {
     font-size: 14px;
   }
-  
+
   .history-item {
     padding: 12px;
     border-radius: 12px;
   }
-  
+
   .item-text {
     font-size: 12px;
     -webkit-line-clamp: 1;
   }
-  
+
   .item-actions {
     gap: 6px;
   }
-  
+
   .delete-btn {
     width: 24px;
     height: 24px;

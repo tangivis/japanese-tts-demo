@@ -20,14 +20,14 @@
           <div class="input-section">
             <TextInput
               ref="textInputRef"
-              @text-submit="handleTextSubmit"
-              @text-change="handleTextChange"
-              @enable-edit="handleStartEdit"
               :loading="processing"
               :is-playing="isPlaying"
               :has-audio="hasAudio"
               :can-edit="canEdit"
               :text-changed="textChanged"
+              @text-submit="handleTextSubmit"
+              @text-change="handleTextChange"
+              @enable-edit="handleStartEdit"
             />
           </div>
 
@@ -48,7 +48,7 @@
 
             <!-- 历史记录区域 -->
             <div class="history-wrapper">
-              <AudioHistory 
+              <AudioHistory
                 :history="audioHistory"
                 :is-playing="isPlaying"
                 @select-item="handleSelectItem"
@@ -59,7 +59,7 @@
         </div>
       </main>
     </div>
-    
+
     <!-- 信息下拉菜单 -->
     <InfoDropdown />
   </div>
@@ -69,13 +69,13 @@
 import { ref, nextTick, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Microphone } from '@element-plus/icons-vue'
-import TextInput from './components/TextInput.vue'
-import MiniPlayer from './components/MiniPlayer.vue'
-import AudioHistory from './components/AudioHistory.vue'
-import InfoDropdown from './components/InfoDropdown.vue'
-import { useTTS } from './composables/useTTS'
+import TextInput from '@/components/TextInput.vue'
+import MiniPlayer from '@/components/MiniPlayer.vue'
+import AudioHistory from '@/components/AudioHistory.vue'
+import InfoDropdown from '@/components/InfoDropdown.vue'
+import { useTTS } from '@/composables/useTTS'
 
-const { generateAudio, isGenerating, createControlledSpeech } = useTTS()
+const { generateAudio, createControlledSpeech } = useTTS()
 
 const processing = ref(false)
 const hasAudio = ref(false)
@@ -103,7 +103,7 @@ const handleTextSubmit = async (text) => {
   }
 
   processing.value = true
-  
+
   try {
     const audioData = await generateAudio(text)
     duration.value = audioData.duration || 0
@@ -111,12 +111,12 @@ const handleTextSubmit = async (text) => {
     canEdit.value = false
     textChanged.value = false
     lastGeneratedText.value = text
-    
+
     addToHistory(text)
-    
+
     await nextTick()
     startPlaying(text)
-    
+
     ElMessage.success('音声生成完了')
   } catch (error) {
     console.error('TTS Error:', error)
@@ -133,14 +133,14 @@ const startPlaying = (text) => {
     }
 
     const utterance = createControlledSpeech(text)
-    
+
     utterance.onstart = () => {
       isPlaying.value = true
       currentTime.value = 0
       progress.value = 0
       startTimeTracking()
     }
-    
+
     utterance.onend = () => {
       isPlaying.value = false
       currentTime.value = 0
@@ -148,7 +148,7 @@ const startPlaying = (text) => {
       stopTimeTracking()
       currentUtterance = null
     }
-    
+
     utterance.onerror = () => {
       isPlaying.value = false
       currentTime.value = 0
@@ -156,7 +156,7 @@ const startPlaying = (text) => {
       stopTimeTracking()
       currentUtterance = null
     }
-    
+
     currentUtterance = utterance
     speechSynthesis.speak(utterance)
   } catch (error) {
@@ -212,10 +212,10 @@ const handleSelectItem = async (item) => {
     textChanged.value = true // 选择历史记录算作文本修改
     lastGeneratedText.value = ''
   }
-  
+
   await nextTick()
   textInputRef.value?.focusTextarea()
-  
+
   ElMessage.info('テキストを入力欄に設定しました')
 }
 
@@ -225,7 +225,7 @@ const startTimeTracking = () => {
     if (isPlaying.value && duration.value > 0) {
       currentTime.value += 0.1
       progress.value = Math.min(100, (currentTime.value / duration.value) * 100)
-      
+
       if (currentTime.value >= duration.value) {
         isPlaying.value = false
         currentTime.value = duration.value
@@ -248,31 +248,26 @@ const addToHistory = (text) => {
     id: Date.now().toString(),
     text: text.length > 50 ? text.substring(0, 50) + '...' : text,
     fullText: text,
-    timestamp: new Date().toLocaleString('ja-JP')
+    timestamp: new Date().toLocaleString('ja-JP'),
   }
-  
+
   audioHistory.value.unshift(historyItem)
-  
+
   if (audioHistory.value.length > 10) {
     audioHistory.value = audioHistory.value.slice(0, 10)
   }
 }
 
 const handleDeleteHistory = (id) => {
-  const index = audioHistory.value.findIndex(item => item.id === id)
+  const index = audioHistory.value.findIndex((item) => item.id === id)
   if (index !== -1) {
     audioHistory.value.splice(index, 1)
   }
-  
+
   // 如果删除的是当前播放的项目，清除当前播放ID
   if (currentPlayingId.value === id) {
     currentPlayingId.value = null
   }
-}
-
-const estimateDuration = (text) => {
-  const charactersPerSecond = 8
-  return Math.max(2, text.length / charactersPerSecond)
 }
 
 // 页面刷新或关闭时停止播放
@@ -295,7 +290,7 @@ if (typeof document !== 'undefined') {
       stopTimeTracking()
     }
   })
-  
+
   // 页面卸载时停止播放
   window.addEventListener('beforeunload', () => {
     if (speechSynthesis.speaking) {
@@ -313,7 +308,8 @@ if (typeof document !== 'undefined') {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -324,7 +320,14 @@ html, body {
   min-height: 100vh;
   height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family:
+    'Google Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    sans-serif;
   position: relative;
   overflow: hidden;
   margin: 0;
@@ -337,7 +340,7 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
+  background:
     radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
@@ -443,11 +446,11 @@ html, body {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .main-content {
     padding: 0 24px 24px;
   }
-  
+
   .control-section {
     gap: 16px;
   }
@@ -457,23 +460,23 @@ html, body {
   .app-header {
     padding: 24px 20px 20px;
   }
-  
+
   .title {
     font-size: 2rem;
   }
-  
+
   .title-icon {
     font-size: 1.8rem;
   }
-  
+
   .subtitle {
     font-size: 0.9rem;
   }
-  
+
   .main-content {
     padding: 0 20px 20px;
   }
-  
+
   .content-grid {
     gap: 16px;
   }
@@ -483,21 +486,21 @@ html, body {
   .app-header {
     padding: 20px 16px 16px;
   }
-  
+
   .title {
     font-size: 1.8rem;
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .title-icon {
     font-size: 1.6rem;
   }
-  
+
   .subtitle {
     font-size: 0.85rem;
   }
-  
+
   .main-content {
     padding: 0 16px 16px;
   }

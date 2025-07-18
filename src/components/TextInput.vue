@@ -1,10 +1,16 @@
 <template>
-  <div class="text-input-container" :class="{ 'playing': isPlaying, 'generating': loading }">
+  <div class="text-input-container" :class="{ playing: isPlaying, generating: loading }">
     <div class="input-header">
       <div class="header-content">
         <div class="header-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
         <span class="header-title">テキスト入力</span>
@@ -15,22 +21,24 @@
 
     <div class="input-content">
       <!-- 智能文件上传区域 -->
-      <div 
-        class="upload-section"
-        :class="{ 'compact': text.trim() }"
-        v-show="!isPlaying && canEdit"
-      >
+      <div v-show="!isPlaying && canEdit" class="upload-section" :class="{ compact: text.trim() }">
         <input
           ref="fileInput"
           type="file"
           accept=".txt,.md"
-          @change="handleFileChange"
           style="display: none"
+          @change="handleFileChange"
         />
         <div class="upload-area" @click="triggerFileSelect">
           <div class="upload-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.64 16.2a2 2 0 0 1-2.83-2.83l8.49-8.49" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.64 16.2a2 2 0 0 1-2.83-2.83l8.49-8.49"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div class="upload-text">
@@ -44,15 +52,30 @@
       <div class="textarea-section">
         <!-- 简洁编辑按钮 -->
         <div v-if="hasAudio && !canEdit && !isPlaying" class="edit-prompt">
-          <button class="edit-btn" @click="enableEdit" title="テキストを編集">
+          <button class="edit-btn" title="テキストを編集" @click="enableEdit">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </button>
         </div>
-        
-        <div class="textarea-wrapper" :class="{ 'disabled': (!canEdit && hasAudio && !isPlaying), 'playing': isPlaying }">
+
+        <div
+          class="textarea-wrapper"
+          :class="{ disabled: !canEdit && hasAudio && !isPlaying, playing: isPlaying }"
+        >
           <textarea
             ref="textareaRef"
             v-model="text"
@@ -60,19 +83,23 @@
             :disabled="!canEdit && hasAudio && !isPlaying"
             :placeholder="getPlaceholder()"
             class="smart-textarea"
+            rows="6"
             @input="onTextChange"
             @focus="onFocus"
             @blur="onBlur"
-            rows="6"
           ></textarea>
         </div>
 
         <!-- 提示 -->
-        <div class="textarea-footer" v-show="!isPlaying && canEdit">
+        <div v-show="!isPlaying && canEdit" class="textarea-footer">
           <div class="input-hints">
             <span v-if="text.length === 0" class="hint">日本語のテキストを入力してください</span>
-            <span v-else-if="text.length < 10" class="hint">もう少し長いテキストをお試しください</span>
-            <span v-else-if="hasAudio && textChanged" class="changed-hint">テキストが変更されました。新しい音声を生成してください。</span>
+            <span v-else-if="text.length < 10" class="hint"
+              >もう少し長いテキストをお試しください</span
+            >
+            <span v-else-if="hasAudio && textChanged" class="changed-hint"
+              >テキストが変更されました。新しい音声を生成してください。</span
+            >
             <span v-else-if="hasAudio && !textChanged" class="synced-hint">音声と同期済み</span>
             <span v-else class="ready-hint">音声生成できます</span>
           </div>
@@ -80,32 +107,36 @@
       </div>
 
       <!-- 智能操作按钮 -->
-      <div class="action-section" v-show="!isPlaying && canEdit">
-        <button
-          :disabled="!canGenerate"
-          class="generate-btn"
-          @click="handleGenerate"
-        >
+      <div v-show="!isPlaying && canEdit" class="action-section">
+        <button :disabled="!canGenerate" class="generate-btn" @click="handleGenerate">
           <div class="btn-content">
             <div v-if="loading" class="loading-spinner"></div>
             <div v-else class="btn-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="currentColor"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path
+                  d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
               </svg>
             </div>
             <span>{{ getButtonText() }}</span>
           </div>
         </button>
 
-        <button
-          v-if="text.trim()"
-          @click="clearText"
-          class="clear-btn"
-          :disabled="loading"
-        >
+        <button v-if="text.trim()" class="clear-btn" :disabled="loading" @click="clearText">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path
+              d="M18 6L6 18M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
           </svg>
           クリア
         </button>
@@ -122,28 +153,27 @@ const emit = defineEmits(['textSubmit', 'stop-playing', 'textChange', 'enableEdi
 const props = defineProps({
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isPlaying: {
     type: Boolean,
-    default: false
+    default: false,
   },
   hasAudio: {
     type: Boolean,
-    default: false
+    default: false,
   },
   canEdit: {
     type: Boolean,
-    default: true
+    default: true,
   },
   textChanged: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const text = ref('')
-const textChanged = ref(false)
 const originalText = ref('')
 const focused = ref(false)
 const fileInput = ref(null)
@@ -151,12 +181,11 @@ const textareaRef = ref(null)
 
 const canGenerate = computed(() => {
   // 基本条件：有文本内容，不在加载中
-  const basicConditions = text.value.trim().length >= 1 && 
-                         !props.loading
+  const basicConditions = text.value.trim().length >= 1 && !props.loading
 
   // 生成条件：没有音频 或者 文本已修改
   const generateConditions = !props.hasAudio || props.textChanged
-  
+
   return basicConditions && generateConditions
 })
 
@@ -261,7 +290,7 @@ defineExpose({
   setText,
   getText,
   resetChangeState,
-  focusTextarea
+  focusTextarea,
 })
 </script>
 
@@ -333,8 +362,13 @@ defineExpose({
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .input-content {
@@ -532,7 +566,8 @@ defineExpose({
   font-size: 12px;
 }
 
-.hint, .ready-hint {
+.hint,
+.ready-hint {
   color: #64748b;
 }
 
@@ -611,8 +646,12 @@ defineExpose({
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .clear-btn {
